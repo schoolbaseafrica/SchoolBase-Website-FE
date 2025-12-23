@@ -1,0 +1,146 @@
+name: Frontend Deploy Pipeline
+
+on:
+  push:
+    branches: 
+      - main
+    paths-ignore:
+      - 'README.md'
+      - 'docs/**'
+      - '*.md'
+
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  PM2_APP_NAME: fe-prod-schoolbase
+  APP_PORT: 3002
+
+jobs:
+  # Primary Deploy - tries GitHub runners first
+  primary-deploy:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    outputs:
+      success: ${{ steps.check.outputs.success }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check for vulnerabilities
+        run: |
+          echo "Checking for high/critical vulnerabilities..."
+          if pnpm audit --audit-level high; then
+            echo "✅ No high or critical vulnerabilities found"
+          else
+            echo "❌ High or critical vulnerabilities detected! Deployment blocked."
+            exit 1
+          fi
+
+      - name: Build app
+        run: pnpm run build
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /home/ubuntu/open-school/prod/open-school-portal-FE
+            
+            # Clean up old files
+            rm -rf .next package.json next.config.ts pnpm-lock.yaml public ecosystem.config.cjs
+            
+            # Get latest code
+            git pull origin main
+            
+            # Install dependencies
+            pnpm install --frozen-lockfile
+            
+            # Build application
+            pnpm run build
+            
+            # Restart PM2
+            pm2 restart ${{ env.PM2_APP_NAME }} || pm2 start "pnpm start -p ${{ env.APP_PORT }}" --name ${{ env.PM2_APP_NAME }}
+            pm2 save
+
+      - id: check
+        run: echo "success=true" >> $GITHUB_OUTPUT
+
+  # Fallback Deploy - uses self-hosted runner if GitHub runners fail
+  fallback-deploy:
+    runs-on: [self-hosted, emerj-runner]
+    needs: primary-deploy
+    if: |
+      (failure() || needs.primary-deploy.outputs.success != 'true')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check for vulnerabilities
+        run: |
+          echo "Checking for high/critical vulnerabilities..."
+          if pnpm audit --audit-level high; then
+            echo "✅ No high or critical vulnerabilities found"
+          else
+            echo "❌ High or critical vulnerabilities detected! Deployment blocked."
+            exit 1
+          fi
+
+      - name: Build app
+        run: pnpm run build
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /home/ubuntu/open-school/prod/open-school-portal-FE
+            
+            # Clean up old files
+            rm -rf .next package.json next.config.ts pnpm-lock.yaml public ecosystem.config.cjs
+            
+            # Get latest code
+            git pull origin main
+            
+            # Install dependencies
+            pnpm install --frozen-lockfile
+            
+            # Build application
+            pnpm run build
+            
+            # Restart PM2
+            pm2 restart ${{ env.PM2_APP_NAME }} || pm2 start "pnpm start -p ${{ env.APP_PORT }}" --name ${{ env.PM2_APP_NAME }}
+            pm2 save
