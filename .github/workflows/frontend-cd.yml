@@ -64,16 +64,13 @@ jobs:
           script: |
             cd /home/ubuntu/open-school/prod/open-school-portal-FE
             
-            # Clean up old files
-            rm -rf .next package.json next.config.ts pnpm-lock.yaml public ecosystem.config.cjs
-            
             # Get latest code
             git pull origin main
             
             # Install dependencies
             pnpm install --frozen-lockfile
             
-            # Build application
+            # Build application on server
             pnpm run build
             
             # Restart PM2
@@ -129,16 +126,13 @@ jobs:
           script: |
             cd /home/ubuntu/open-school/prod/open-school-portal-FE
             
-            # Clean up old files
-            rm -rf .next package.json next.config.ts pnpm-lock.yaml public ecosystem.config.cjs
-            
             # Get latest code
             git pull origin main
             
             # Install dependencies
             pnpm install --frozen-lockfile
             
-            # Build application
+            # Build application on server
             pnpm run build
             
             # Restart PM2
