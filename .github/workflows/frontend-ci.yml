@@ -21,7 +21,6 @@ jobs:
   primary-ci:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
-    continue-on-error: true
     outputs:
       success: ${{ steps.check.outputs.success }}
     steps:
@@ -55,7 +54,7 @@ jobs:
     needs: primary-ci
     if: |
       github.event.pull_request.draft == false && 
-      (failure() || needs.primary-ci.outputs.success != 'true')
+      failure()
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
