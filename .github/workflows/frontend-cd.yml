@@ -21,7 +21,6 @@ jobs:
   # Primary Deploy - tries GitHub runners first
   primary-deploy:
     runs-on: ubuntu-latest
-    continue-on-error: true
     outputs:
       success: ${{ steps.check.outputs.success }}
     steps:
@@ -64,16 +63,14 @@ jobs:
           script: |
             cd /home/ubuntu/open-school/prod/open-school-portal-FE
             
-            # Clean up old files
-            rm -rf .next package.json next.config.ts pnpm-lock.yaml public ecosystem.config.cjs
-            
-            # Get latest code
+            # Ensure we're on main branch and get latest code
+            git checkout main
             git pull origin main
             
             # Install dependencies
             pnpm install --frozen-lockfile
             
-            # Build application
+            # Build application on server
             pnpm run build
             
             # Restart PM2
@@ -87,8 +84,7 @@ jobs:
   fallback-deploy:
     runs-on: [self-hosted, emerj-runner]
     needs: primary-deploy
-    if: |
-      (failure() || needs.primary-deploy.outputs.success != 'true')
+    if: failure()
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -129,16 +125,14 @@ jobs:
           script: |
             cd /home/ubuntu/open-school/prod/open-school-portal-FE
             
-            # Clean up old files
-            rm -rf .next package.json next.config.ts pnpm-lock.yaml public ecosystem.config.cjs
-            
-            # Get latest code
+            # Ensure we're on main branch and get latest code
+            git checkout main
             git pull origin main
             
             # Install dependencies
             pnpm install --frozen-lockfile
             
-            # Build application
+            # Build application on server
             pnpm run build
             
             # Restart PM2
