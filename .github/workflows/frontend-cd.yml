@@ -73,8 +73,14 @@ jobs:
             # Build application on server
             pnpm run build
             
-            # Restart PM2
-            pm2 restart ${{ env.PM2_APP_NAME }} || pm2 start "pnpm start -p ${{ env.APP_PORT }}" --name ${{ env.PM2_APP_NAME }}
+            # Verify build exists
+            if [ ! -d ".next" ]; then
+              echo "Build failed - .next directory not found"
+              exit 1
+            fi
+            
+            # Reload PM2 app (zero downtime) or start if not running
+            pm2 reload ${{ env.PM2_APP_NAME }} || pm2 start "pnpm start -p ${{ env.APP_PORT }}" --name ${{ env.PM2_APP_NAME }}
             pm2 save
 
       - id: check
@@ -135,6 +141,12 @@ jobs:
             # Build application on server
             pnpm run build
             
-            # Restart PM2
-            pm2 restart ${{ env.PM2_APP_NAME }} || pm2 start "pnpm start -p ${{ env.APP_PORT }}" --name ${{ env.PM2_APP_NAME }}
+            # Verify build exists
+            if [ ! -d ".next" ]; then
+              echo "Build failed - .next directory not found"
+              exit 1
+            fi
+            
+            # Reload PM2 app (zero downtime) or start if not running
+            pm2 reload ${{ env.PM2_APP_NAME }} || pm2 start "pnpm start -p ${{ env.APP_PORT }}" --name ${{ env.PM2_APP_NAME }}
             pm2 save
