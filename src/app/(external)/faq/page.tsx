@@ -76,8 +76,8 @@ const Faq = () => {
           Frequently Asked Question
         </h1>
         <p className="text-center text-sm text-[#535353] sm:text-xl md:text-2xl">
-          Everything you need to know about how Open School Portal works for schools,
-          parents, teachers, and students.
+          Everything you need to know about how SchoolBase works for schools, parents,
+          teachers, and students.
         </p>
       </div>
       <section className="md:pt-20">

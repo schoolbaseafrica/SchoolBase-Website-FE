@@ -1,5 +1,5 @@
-import Link from "next/link"
 import React from "react"
+import Link from "next/link"
 
 const PrivacyPolicy = () => {
   return (
@@ -179,10 +179,10 @@ const PrivacyPolicy = () => {
             <span className="block">
               Email:
               <Link
-                href="mailto:openschoolportalhq@gmail.com"
+                href="mailto:support@schoolbase.africa."
                 className="pl-1.5 hover:underline"
               >
-                openschoolportalhq@gmail.com
+                support@schoolbase.africa.
               </Link>
             </span>
           </p>

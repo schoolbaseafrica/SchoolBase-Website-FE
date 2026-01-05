@@ -1,7 +1,7 @@
 # Contributing Guidelines
-Hey, **Frontend Engineer!** We’re thrilled to have you contribute to Open School Portal. We value **collaboration, clarity, and high-quality code**. Please review these guidelines to ensure a smooth contribution process.
+Hey, **Frontend Engineer!** We’re thrilled to have you contribute to SchoolBase. We value **collaboration, clarity, and high-quality code**. Please review these guidelines to ensure a smooth contribution process.
 
-**What we’re building:** Open School Portal digitizes school operations—attendance (including NFC check-ins), results, fee management, timetables, communications, and analytics—so every school can run on a private, customizable instance with real-time visibility for admins, teachers, students, and parents.
+**What we’re building:** SchoolBase digitizes school operations—attendance (including NFC check-ins), results, fee management, timetables, communications, and analytics—so every school can run on a private, customizable instance with real-time visibility for admins, teachers, students, and parents.
 
 ---
 
@@ -118,4 +118,4 @@ Regularly pull from `dev` to keep your branch updated.
 
 ---
 
-Thank you for contributing to **Open School Portal** and helping us build a reliable platform for schools, teachers, parents, and students.
+Thank you for contributing to **SchoolBase** and helping us build a reliable platform for schools, teachers, parents, and students.

@@ -2,9 +2,9 @@
 
 import React from "react"
 import Link from "next/link"
-import { Mail, Phone, Home } from "lucide-react"
 import Logo from "./logo"
-// import SocialLinks from "./social-links"
+import SocialLinks from "./social-links"
+import { Home, Mail, Phone } from "lucide-react"
 import { usePathname } from "next/navigation"
 
 const product = [
@@ -36,7 +36,7 @@ const Footer = () => {
               results, timetables, fees, and NFC, all in one place
             </p>
 
-            {/* <SocialLinks /> */}
+            <SocialLinks />
           </section>
 
           <section className="flex flex-col items-start gap-5 lg:w-auto lg:pt-10">
@@ -71,20 +71,20 @@ const Footer = () => {
               <li className="flex items-center gap-3">
                 <Mail size={20} className="shrink-0" />
                 <a
-                  href="mailto:openschoolportalhq@gmail.com"
+                  href="mailto:support@schoolbase.africa."
                   className="wrap-break-word hover:text-white/90 hover:underline"
                 >
-                  openschoolportalhq@gmail.com
+                  support@schoolbase.africa.
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Phone size={20} className="shrink-0" />
-                <a href="tel:+2341234567890">+234 123 456 7890</a>
+                <a href="tel:+2341234567890">+234 810 457 7538</a>
               </li>
               <li className="flex items-start gap-3">
                 <Home size={20} className="mt-1 shrink-0" />
                 <address className="wrap-break-word not-italic">
-                  123 School Street, Lagos, Nigeria
+                  Wyoming, United States of America
                 </address>
               </li>
             </ul>
