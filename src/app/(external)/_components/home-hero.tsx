@@ -1,9 +1,9 @@
 "use client"
 
-import { usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
+import { usePathname } from "next/navigation"
+import { Button } from "@/components/ui/button"
 import WatchDemoButton from "./watch-demo-button"
 
 const HomeHero = () => {
@@ -36,7 +36,7 @@ const HomeHero = () => {
           <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-t-3xl border border-white/70 bg-white sm:max-w-3xl md:max-w-5xl lg:max-w-6xl lg:rounded-t-[36px]">
             <Image
               src="/assets/Hero-img (2).png"
-              alt="Open School Portal dashboard preview"
+              alt="SchoolBase dashboard preview"
               width={1440}
               height={820}
               priority
