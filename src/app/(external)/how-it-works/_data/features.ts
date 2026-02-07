@@ -333,7 +333,7 @@ export const HowItWorksFeatures: Feature[] = [
 //     id: "feat-5",
 //     header: "Timetable Management (Admins & Teachers)",
 //     paragraph:
-//       "Open School Portal keeps the school schedule organized by allowing admins and teachers to create and update timetables, assign classes and subjects, and share schedules with students and parents, while everyone can view the latest timetable in one place ensuring no confusion, missed classes, or scheduling conflicts across the school community.",
+//       "SchoolBase keeps the school schedule organized by allowing admins and teachers to create and update timetables, assign classes and subjects, and share schedules with students and parents, while everyone can view the latest timetable in one place ensuring no confusion, missed classes, or scheduling conflicts across the school community.",
 //     images: [
 //       {
 //         src: "/assets/images/howitworks/feat-5.1.svg",
