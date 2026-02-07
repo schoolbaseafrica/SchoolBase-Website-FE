@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button"
-import Image from "next/image"
-import Link from "next/link"
 import React from "react"
+import Link from "next/link"
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
 
 const HomeAboutSection = () => {
   return (
@@ -29,10 +29,10 @@ const HomeAboutSection = () => {
             We’re Building a Smarter, Connected School Experience
           </p>
           <p className="text-lg text-[#535353]">
-            Open School Portal is a modern school management system that helps schools
-            automate tasks, improve communication, and give students, teachers, and
-            parents a seamless digital experience. We focus on making everyday school
-            operations faster, easier, and more transparent.
+            SchoolBase is a modern school management system that helps schools automate
+            tasks, improve communication, and give students, teachers, and parents a
+            seamless digital experience. We focus on making everyday school operations
+            faster, easier, and more transparent.
           </p>
           <Button asChild className="w-full md:w-fit">
             <Link href={"/about"}>Explore</Link>
