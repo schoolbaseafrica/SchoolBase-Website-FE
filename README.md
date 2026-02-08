@@ -42,11 +42,9 @@ Unlike traditional SaaS solutions, the platform is deployed per school, offering
 
 ## Repository Structure
 ```
-open-school-portal-frontend/
+SchoolBase-Website-FE/
 ├── src/
 │   ├── app/                     # Next.js app router
-│   │   ├── (auth)/              # Authentication pages
-│   │   ├── (portal)/            # Main portal pages (admin, teacher, student, parent)
 │   │   ├── (external)/          # External facing pages
 │   │   ├── (squeeze)/           # Squeeze pages
 │   │   ├── api/                 # API route handlers
@@ -210,8 +208,8 @@ Compared to traditional systems like PowerSchool or QuickSchools, it offers bett
 ## Getting Started
 ### 1. Clone repository
 ```bash
-git clone https://github.com/<org>/open-school-portal-frontend.git
-cd open-school-portal-frontend
+git clone https://github.com/schoolbaseafrica/SchoolBase-Website-FE.git
+cd SchoolBase-Website-FE
 ```
 
 ### 2. Install dependencies
