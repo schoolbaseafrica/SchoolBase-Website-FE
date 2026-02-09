@@ -27,7 +27,7 @@ const forWhoData = [
     image: "/images/home/for-who/image4.png",
     alt: "Administrators",
     description:
-      "For parents who want organized, real-time updates on attendance, results and school activities of their ward .",
+      "For parents who want organized, real-time updates on attendance, results and school activities of their ward.",
   },
 ]
 
