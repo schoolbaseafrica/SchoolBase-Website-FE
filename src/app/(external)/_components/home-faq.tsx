@@ -7,6 +7,13 @@ import {
 } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Rocket } from "lucide-react"
+import {
+  AnimatedCard,
+  AnimatedList,
+  AnimatedListItem,
+  AnimatedStagger,
+  AnimatedStaggerItem,
+} from "./page-animations"
 
 interface FAQItem {
   id: number
@@ -48,77 +55,92 @@ export default function HomeFAQ() {
       className="font-outfit mb-8 h-full w-full scroll-mt-20 bg-[#fafafa] px-4 py-8 sm:px-4 lg:px-8"
     >
       <div className="mx-auto max-w-full px-4 lg:max-w-[1285px]">
-        <h2
-          className="mb-8 leading-none font-semibold text-gray-900"
-          style={{ fontSize: "clamp(24px, 3vw, 32px)" }}
-        >
-          Frequently Asked Questions
-        </h2>
+        <AnimatedList className="mb-8" stagger={0.12} viewportAmount={0.3}>
+          <AnimatedListItem>
+            <h2
+              className="leading-none font-semibold text-gray-900"
+              style={{ fontSize: "clamp(24px, 3vw, 32px)" }}
+            >
+              Frequently Asked Questions
+            </h2>
+          </AnimatedListItem>
+        </AnimatedList>
+
         <div className="flex flex-col items-stretch lg:flex-row lg:gap-[110px]">
           <div className="flex-1 lg:max-w-[860px]">
-            <Accordion
-              type="single"
-              collapsible
-              className="w-full space-y-4"
-              defaultValue={`item-0`}
-            >
-              {faqData.map((faq, index) => (
-                <AccordionItem
-                  key={index}
-                  value={`item-${index}`}
-                  className="rounded-md border border-[#2D2D2D]/15 bg-white px-4 py-2"
-                >
-                  <AccordionTrigger
-                    className="flex w-full flex-row items-center py-2 text-left font-normal text-[#535353] transition-colors duration-200 hover:text-[#2d2d2d]"
-                    style={{ fontSize: "clamp(16px, 2vw, 20px)" }}
-                  >
-                    <span className="block w-full sm:text-lg md:text-2xl">
-                      {faq.question}
-                    </span>
-                  </AccordionTrigger>
-
-                  <AccordionContent className="flex flex-col gap-4">
-                    <p
-                      className="leading-relaxed text-[#535353]/80"
-                      style={{ fontSize: "clamp(14px, 2vw, 16px)" }}
+            <AnimatedStagger stagger={0.1} delayChildren={0.05}>
+              <Accordion
+                type="single"
+                collapsible
+                className="w-full space-y-4"
+                defaultValue="item-0"
+              >
+                {faqData.map((faq, index) => (
+                  <AnimatedStaggerItem key={faq.id}>
+                    <AccordionItem
+                      value={`item-${index}`}
+                      className="rounded-md border border-[#2D2D2D]/15 bg-white px-4 py-2"
                     >
-                      <span className="text-sm md:text-xl">{faq.answer}</span>
-                    </p>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+                      <AccordionTrigger
+                        className="flex w-full flex-row items-center py-2 text-left font-normal text-[#535353] transition-colors duration-200 hover:text-[#2d2d2d]"
+                        style={{ fontSize: "clamp(16px, 2vw, 20px)" }}
+                      >
+                        <span className="block w-full sm:text-lg md:text-2xl">
+                          {faq.question}
+                        </span>
+                      </AccordionTrigger>
+
+                      <AccordionContent className="flex flex-col gap-4">
+                        <p
+                          className="leading-relaxed text-[#535353]/80"
+                          style={{ fontSize: "clamp(14px, 2vw, 16px)" }}
+                        >
+                          <span className="text-sm md:text-xl">{faq.answer}</span>
+                        </p>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </AnimatedStaggerItem>
+                ))}
+              </Accordion>
+            </AnimatedStagger>
           </div>
 
           <div className="mt-16 lg:mt-0 lg:h-full lg:max-w-[330px]">
-            <div className="flex h-full flex-col items-center justify-center rounded-lg border border-[#999] px-4 py-8 text-center lg:min-h-[400px]">
+            <AnimatedCard className="flex h-full flex-col items-center justify-center rounded-lg border border-[#999] px-4 py-8 text-center lg:min-h-[400px]">
               <div className="mx-auto mb-4 flex h-[62px] w-[62px] max-w-32 items-center justify-center rounded-full bg-[#DA3743]/10">
                 <Rocket className="h-8 w-8 text-[#DA3743]" />
               </div>
-              <h2
-                className="mb-2 font-bold lg:mb-4"
-                style={{ fontSize: "clamp(16px, 2vw, 18px)" }}
-              >
-                Ready to transform your school?
-              </h2>
 
-              <p
-                className="mb-2 leading-relaxed text-black lg:mb-4"
-                style={{ fontSize: "clamp(14px, 2vw, 16px)" }}
-              >
-                Our team is ready to set up your school system. We respond fast.
-              </p>
-
-              <div className="my-2 w-full space-y-4 lg:my-0 lg:mt-6">
-                <Button
-                  asChild
-                  className="w-full rounded-lg bg-[#DA3743] px-8 py-2 font-semibold text-white transition-colors duration-200"
-                  style={{ fontSize: "clamp(14px, 2vw, 16px)" }}
-                >
-                  <Link href="/contact-us">Request Installation</Link>
-                </Button>
-              </div>
-            </div>
+              <AnimatedList className="w-full" stagger={0.1}>
+                <AnimatedListItem>
+                  <h2
+                    className="mb-2 font-bold lg:mb-4"
+                    style={{ fontSize: "clamp(16px, 2vw, 18px)" }}
+                  >
+                    Ready to transform your school?
+                  </h2>
+                </AnimatedListItem>
+                <AnimatedListItem>
+                  <p
+                    className="mb-2 leading-relaxed text-black lg:mb-4"
+                    style={{ fontSize: "clamp(14px, 2vw, 16px)" }}
+                  >
+                    Our team is ready to set up your school system. We respond fast.
+                  </p>
+                </AnimatedListItem>
+                <AnimatedListItem>
+                  <div className="my-2 w-full space-y-4 lg:my-0 lg:mt-6">
+                    <Button
+                      asChild
+                      className="w-full rounded-lg bg-[#DA3743] px-8 py-2 font-semibold text-white transition-colors duration-200"
+                      style={{ fontSize: "clamp(14px, 2vw, 16px)" }}
+                    >
+                      <Link href="/contact-us">Request Installation</Link>
+                    </Button>
+                  </div>
+                </AnimatedListItem>
+              </AnimatedList>
+            </AnimatedCard>
           </div>
         </div>
       </div>

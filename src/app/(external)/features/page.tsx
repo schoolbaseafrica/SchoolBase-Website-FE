@@ -1,20 +1,33 @@
 import React from "react"
 import { featuresData } from "./_lib/features.data"
 import FeatureSection from "./_components/feature-section"
+import {
+  AnimatedList,
+  AnimatedListItem,
+  AnimatedPage,
+} from "../_components/page-animations"
 
 const page = () => {
   return (
-    <div className="min-h-screen pt-15">
+    <AnimatedPage className="min-h-screen pt-15">
       <div className="container flex flex-col gap-8">
-        <div className="flex flex-col items-center gap-2.5 text-center">
-          <h1 className="text-lg font-medium text-[#2d2d2d] uppercase md:text-2xl lg:text-3xl">
-            WHY YOU SHOULD USE SCHOOL BASE
-          </h1>
-          <p className="text-sm text-[#535353] sm:text-lg md:text-xl">
-            Our platform powers the full student and school lifecycle from admissions to
-            graduation.
-          </p>
-        </div>
+        <AnimatedList
+          className="flex flex-col items-center gap-2.5 text-center"
+          stagger={0.12}
+          viewportAmount={0.3}
+        >
+          <AnimatedListItem>
+            <h1 className="text-lg font-medium text-[#2d2d2d] uppercase md:text-2xl lg:text-3xl">
+              WHY YOU SHOULD USE SCHOOL BASE
+            </h1>
+          </AnimatedListItem>
+          <AnimatedListItem>
+            <p className="text-sm text-[#535353] sm:text-lg md:text-xl">
+              Our platform powers the full student and school lifecycle from admissions to
+              graduation.
+            </p>
+          </AnimatedListItem>
+        </AnimatedList>
         <div className="flex flex-col gap-20 py-10">
           {featuresData.map((data, index) => (
             <FeatureSection
@@ -31,7 +44,7 @@ const page = () => {
           ))}
         </div>
       </div>
-    </div>
+    </AnimatedPage>
   )
 }
 
