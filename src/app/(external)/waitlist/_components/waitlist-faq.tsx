@@ -1,9 +1,15 @@
 import {
   Accordion,
+  AccordionContent,
   AccordionItem,
   AccordionTrigger,
-  AccordionContent,
 } from "@/components/ui/accordion"
+import {
+  AnimatedList,
+  AnimatedListItem,
+  AnimatedStagger,
+  AnimatedStaggerItem,
+} from "../../_components/page-animations"
 
 export default function FAQAccordion() {
   const faqs = [
@@ -25,29 +31,36 @@ export default function FAQAccordion() {
   ]
 
   return (
-    <div className="w-full bg-white py-10 md:py-16">
+    <section className="w-full bg-white py-10 md:py-16">
       <div className="container w-full space-y-8">
-        <h2 className="text-3xl font-bold text-gray-900 md:text-4xl">
-          Frequently Asked Questions
-        </h2>
+        <AnimatedList className="space-y-3" stagger={0.12}>
+          <AnimatedListItem>
+            <h2 className="text-3xl font-bold text-gray-900 md:text-4xl">
+              Frequently Asked Questions
+            </h2>
+          </AnimatedListItem>
+        </AnimatedList>
 
-        <Accordion type="single" collapsible className="flex flex-col gap-2 py-3">
-          {faqs.map((faq, index) => (
-            <AccordionItem
-              key={index}
-              value={`item-${index}`}
-              className="rounded-lg border border-gray-200"
-            >
-              <AccordionTrigger className="p-3 text-lg md:p-5">
-                {faq.question}
-              </AccordionTrigger>
-              <AccordionContent className="p-3 text-lg md:px-5">
-                {faq.answer}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+        <AnimatedStagger stagger={0.1} delayChildren={0.04}>
+          <Accordion type="single" collapsible className="flex flex-col gap-2 py-3">
+            {faqs.map((faq, index) => (
+              <AnimatedStaggerItem key={faq.question}>
+                <AccordionItem
+                  value={`item-${index}`}
+                  className="rounded-lg border border-gray-200"
+                >
+                  <AccordionTrigger className="p-3 text-lg md:p-5">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="p-3 text-lg md:px-5">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              </AnimatedStaggerItem>
+            ))}
+          </Accordion>
+        </AnimatedStagger>
       </div>
-    </div>
+    </section>
   )
 }

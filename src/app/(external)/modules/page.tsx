@@ -20,6 +20,14 @@ import {
   ArrowRight,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import {
+  AnimatedBlock,
+  AnimatedList,
+  AnimatedListItem,
+  AnimatedPage,
+  AnimatedStagger,
+  AnimatedStaggerItem,
+} from "../_components/page-animations"
 
 const modules = [
   {
@@ -175,13 +183,7 @@ const modules = [
   },
 ]
 
-const ModuleCard = ({
-  module,
-  index,
-}: {
-  module: (typeof modules)[0]
-  index: number
-}) => {
+const ModuleCard = ({ module }: { module: (typeof modules)[0] }) => {
   const [isFlipped, setIsFlipped] = useState(false)
   const [showScrollIndicator, setShowScrollIndicator] = useState(false)
   const contentRef = React.useRef<HTMLDivElement>(null)
@@ -200,13 +202,7 @@ const ModuleCard = ({
   }, [isFlipped])
 
   return (
-    <div
-      className="group animate-onrender h-[400px]"
-      style={{
-        animationDelay: `${index * 100}ms`,
-        perspective: "1000px",
-      }}
-    >
+    <AnimatedStaggerItem className="group h-[400px]" style={{ perspective: "1000px" }}>
       <div
         className={cn(
           "relative h-full w-full transition-all duration-500",
@@ -266,9 +262,9 @@ const ModuleCard = ({
             ref={contentRef}
             className="scrollbar-thin scrollbar-thumb-accent/20 scrollbar-track-transparent relative mt-4 flex-1 overflow-y-auto pr-2"
           >
-            <div className="space-y-4 pb-6">
+            <AnimatedList className="space-y-4 pb-6" stagger={0.08} delayChildren={0.05}>
               {module.features.map((feature, idx) => (
-                <div key={idx} className="space-y-1">
+                <AnimatedListItem key={idx} className="space-y-1" variant="left">
                   <h4 className="text-foreground flex items-center gap-2 text-sm font-semibold">
                     <div className="bg-accent h-1.5 w-1.5 rounded-full" />
                     {feature.name}
@@ -276,9 +272,9 @@ const ModuleCard = ({
                   <p className="text-muted-foreground pl-3.5 text-xs leading-relaxed">
                     {feature.description}
                   </p>
-                </div>
+                </AnimatedListItem>
               ))}
-            </div>
+            </AnimatedList>
           </CardContent>
           <div className="border-border/10 bg-background/50 relative border-t p-6 backdrop-blur-sm">
             {/* Scroll Indicator */}
@@ -300,27 +296,27 @@ const ModuleCard = ({
           </div>
         </Card>
       </div>
-    </div>
+    </AnimatedStaggerItem>
   )
 }
 
 const ModulesPage = () => {
   return (
-    <div className="bg-background min-h-screen py-12 md:py-20">
+    <AnimatedPage className="bg-background min-h-screen py-12 md:py-20">
       <div className="container mx-auto px-4">
-        <div className="animate-onrender mx-auto mb-16 flex max-w-220 flex-col gap-4">
+        <AnimatedBlock className="mx-auto mb-16 flex max-w-220 flex-col gap-4">
           <h1 className="text-center text-2xl font-medium text-[#2d2d2d] md:text-3xl">
             Modules
           </h1>
-        </div>
+        </AnimatedBlock>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <AnimatedStagger className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {modules.map((module, index) => (
-            <ModuleCard key={index} module={module} index={index} />
+            <ModuleCard key={index} module={module} />
           ))}
-        </div>
+        </AnimatedStagger>
       </div>
-    </div>
+    </AnimatedPage>
   )
 }
 

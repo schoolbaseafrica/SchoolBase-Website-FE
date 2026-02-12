@@ -6,6 +6,7 @@ import { z } from "zod"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
 import { sendContactMessage } from "@/services/contact-api"
+import { AnimatedList, AnimatedListItem } from "./page-animations"
 
 const contactSchema = z.object({
   full_name: z.string().min(1, "Name is required"),
@@ -40,7 +41,6 @@ export default function ContactForm() {
     if (!result.success) {
       const fieldErrors: Partial<ContactFormData> = {}
 
-      // Use result.error.issues instead of result.error.errors
       result.error.issues.forEach((err) => {
         const fieldName = err.path[0] as keyof ContactFormData
         fieldErrors[fieldName] = err.message
@@ -50,7 +50,6 @@ export default function ContactForm() {
       return
     }
 
-    // No errors
     setErrors({})
     setIsLoading(true)
 
@@ -58,7 +57,6 @@ export default function ContactForm() {
       await sendContactMessage(formData)
       toast.success(`Thank you, ${formData.full_name}! Your message has been sent.`)
 
-      // Reset form
       setFormData({
         full_name: "",
         email: "",
@@ -73,76 +71,90 @@ export default function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="full_name" className="mb-1 block font-medium">
-          Full Name
-        </label>
-        <Input
-          id="full_name"
-          type="text"
-          name="full_name"
-          value={formData.full_name}
-          onChange={handleChange}
-          className="w-full"
-          disabled={isLoading}
-        />
-        {errors.full_name && <p className="text-sm text-red-500">{errors.full_name}</p>}
-      </div>
+    <form onSubmit={handleSubmit}>
+      <AnimatedList className="space-y-4" stagger={0.1}>
+        <AnimatedListItem>
+          <div>
+            <label htmlFor="full_name" className="mb-1 block font-medium">
+              Full Name
+            </label>
+            <Input
+              id="full_name"
+              type="text"
+              name="full_name"
+              value={formData.full_name}
+              onChange={handleChange}
+              className="w-full"
+              disabled={isLoading}
+            />
+            {errors.full_name && (
+              <p className="text-sm text-red-500">{errors.full_name}</p>
+            )}
+          </div>
+        </AnimatedListItem>
 
-      <div>
-        <label htmlFor="email" className="mb-1 block font-medium">
-          Email
-        </label>
-        <Input
-          id="email"
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          className="w-full"
-          disabled={isLoading}
-        />
-        {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
-      </div>
+        <AnimatedListItem>
+          <div>
+            <label htmlFor="email" className="mb-1 block font-medium">
+              Email
+            </label>
+            <Input
+              id="email"
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full"
+              disabled={isLoading}
+            />
+            {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+          </div>
+        </AnimatedListItem>
 
-      <div>
-        <label htmlFor="school_name" className="mb-1 block font-medium">
-          School Name
-        </label>
-        <Input
-          id="school_name"
-          type="text"
-          name="school_name"
-          value={formData.school_name}
-          onChange={handleChange}
-          className="w-full"
-          disabled={isLoading}
-        />
-        {errors.school_name && (
-          <p className="text-sm text-red-500">{errors.school_name}</p>
-        )}
-      </div>
+        <AnimatedListItem>
+          <div>
+            <label htmlFor="school_name" className="mb-1 block font-medium">
+              School Name
+            </label>
+            <Input
+              id="school_name"
+              type="text"
+              name="school_name"
+              value={formData.school_name}
+              onChange={handleChange}
+              className="w-full"
+              disabled={isLoading}
+            />
+            {errors.school_name && (
+              <p className="text-sm text-red-500">{errors.school_name}</p>
+            )}
+          </div>
+        </AnimatedListItem>
 
-      <div>
-        <label htmlFor="message" className="mb-1 block font-medium">
-          Message
-        </label>
-        <textarea
-          id="message"
-          name="message"
-          value={formData.message}
-          onChange={handleChange}
-          className="w-full rounded-xl border px-3 py-2"
-          rows={4}
-          disabled={isLoading}
-        />
-        {errors.message && <p className="text-sm text-red-500">{errors.message}</p>}
-      </div>
+        <AnimatedListItem>
+          <div>
+            <label htmlFor="message" className="mb-1 block font-medium">
+              Message
+            </label>
+            <textarea
+              id="message"
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              className="w-full rounded-xl border px-3 py-2"
+              rows={4}
+              disabled={isLoading}
+            />
+            {errors.message && <p className="text-sm text-red-500">{errors.message}</p>}
+          </div>
+        </AnimatedListItem>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? "Sending..." : "Send Message"}
-      </Button>
+        <AnimatedListItem>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Sending..." : "Send Message"}
+          </Button>
+        </AnimatedListItem>
+      </AnimatedList>
     </form>
   )
 }
