@@ -72,10 +72,12 @@ jobs:
           key_path: ${{ steps.ssh-key.outputs.path }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            set -e
             cd ${{ env.DEPLOY_PATH }}
-            git fetch origin
+            # Force server to match origin/staging (discard any local changes so pull never blocks)
+            git fetch origin staging
             git checkout staging
-            git pull origin staging
+            git reset --hard origin/staging
             if ! command -v pnpm &> /dev/null; then
               echo "pnpm not found, installing..."
               curl -fsSL https://get.pnpm.io/install.sh | sh -
