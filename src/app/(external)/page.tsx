@@ -6,10 +6,11 @@ import HomeWhyUs from "./_components/home-why-us"
 import HomeAboutSection from "./_components/home-about-us"
 import HomeHowItWorks from "./_components/home-how-it-works"
 import HomeFaq from "./_components/home-faq"
+import { AnimatedPage } from "./_components/page-animations"
 
 export default function Home() {
   return (
-    <div className="min-h-screen">
+    <AnimatedPage className="min-h-screen">
       <HomeHero />
       <HomeAboutSection />
       <HomeHowItWorks />
@@ -18,6 +19,6 @@ export default function Home() {
       <HomeTestimonial />
       <HomeFaq />
       <HomeDemo />
-    </div>
+    </AnimatedPage>
   )
 }

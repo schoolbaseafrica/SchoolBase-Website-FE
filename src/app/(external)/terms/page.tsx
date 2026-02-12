@@ -1,4 +1,10 @@
 import React from "react"
+import {
+  AnimatedBlock,
+  AnimatedPage,
+  AnimatedStagger,
+  AnimatedStaggerItem,
+} from "../_components/page-animations"
 
 interface TermSection {
   id: string
@@ -249,8 +255,8 @@ const termsData: TermSection[] = [
 
 const TermsAndConditions = () => {
   return (
-    <div className="container flex flex-col gap-6 bg-white py-8 md:gap-8 md:py-12">
-      <div className="mx-auto flex max-w-220 flex-col gap-4 text-center">
+    <AnimatedPage className="container flex flex-col gap-6 bg-white py-8 md:gap-8 md:py-12">
+      <AnimatedBlock className="mx-auto flex max-w-220 flex-col gap-4 text-center">
         <h1 className="text-2xl font-semibold text-[#2d2d2d] md:text-3xl">
           SchoolBase - Terms & Conditions
         </h1>
@@ -261,29 +267,28 @@ const TermsAndConditions = () => {
           Welcome to SchoolBase, a digital school management system. By using SchoolBase,
           you agree to the following Terms & Conditions.
         </p>
-      </div>
-      <section className="mx-auto flex w-full max-w-4xl flex-col gap-4 md:pt-10">
+      </AnimatedBlock>
+      <AnimatedStagger className="mx-auto flex w-full max-w-4xl flex-col gap-4 md:pt-10">
         {termsData.map((term) => (
-          <div
-            key={term.id}
-            className="flex flex-col gap-3 rounded-md border border-[#2D2D2D]/15 bg-white p-5 md:p-8"
-          >
-            <h2
-              className="font-medium text-[#2d2d2d]"
-              style={{ fontSize: "clamp(18px, 4vw, 24px)" }}
-            >
-              {term.title}
-            </h2>
-            <div
-              className="leading-relaxed text-[#535353]"
-              style={{ fontSize: "clamp(14px, 2vw, 18px)" }}
-            >
-              {term.content}
+          <AnimatedStaggerItem key={term.id}>
+            <div className="flex flex-col gap-3 rounded-md border border-[#2D2D2D]/15 bg-white p-5 md:p-8">
+              <h2
+                className="font-medium text-[#2d2d2d]"
+                style={{ fontSize: "clamp(18px, 4vw, 24px)" }}
+              >
+                {term.title}
+              </h2>
+              <div
+                className="leading-relaxed text-[#535353]"
+                style={{ fontSize: "clamp(14px, 2vw, 18px)" }}
+              >
+                {term.content}
+              </div>
             </div>
-          </div>
+          </AnimatedStaggerItem>
         ))}
-      </section>
-    </div>
+      </AnimatedStagger>
+    </AnimatedPage>
   )
 }
 

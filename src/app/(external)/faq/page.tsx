@@ -4,6 +4,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import {
+  AnimatedList,
+  AnimatedListItem,
+  AnimatedPage,
+  AnimatedStagger,
+  AnimatedStaggerItem,
+} from "../_components/page-animations"
 
 interface FAQItem {
   id: number
@@ -58,7 +65,7 @@ const faqData: FAQItem[] = [
     id: 7,
     question: "What can parents do on the Parent Portal?",
     answer:
-      "Parents can view their child’s profile, attendance, grades, report cards, and school notices. Their access is strictly read-only and supports multiple children under one account.",
+      "Parents can view their child's profile, attendance, grades, report cards, and school notices. Their access is strictly read-only and supports multiple children under one account.",
   },
   {
     id: 8,
@@ -70,51 +77,57 @@ const faqData: FAQItem[] = [
 
 const Faq = () => {
   return (
-    <div className="container flex min-h-screen flex-col gap-6 bg-white py-8 md:gap-8 md:py-12">
-      <div className="mx-auto flex max-w-220 flex-col gap-4">
-        <h1 className="text-center text-2xl font-semibold text-[#2d2d2d] md:text-3xl">
-          Frequently Asked Question
-        </h1>
-        <p className="text-center text-sm text-[#535353] sm:text-xl md:text-2xl">
-          Everything you need to know about how SchoolBase works for schools, parents,
-          teachers, and students.
-        </p>
-      </div>
-      <section className="md:pt-20">
+    <AnimatedPage className="container flex min-h-screen flex-col gap-6 bg-white py-8 md:gap-8 md:py-12">
+      <AnimatedList className="mx-auto flex max-w-220 flex-col gap-4" stagger={0.13}>
+        <AnimatedListItem>
+          <h1 className="text-center text-2xl font-semibold text-[#2d2d2d] md:text-3xl">
+            Frequently Asked Question
+          </h1>
+        </AnimatedListItem>
+        <AnimatedListItem>
+          <p className="text-center text-sm text-[#535353] sm:text-xl md:text-2xl">
+            Everything you need to know about how SchoolBase works for schools, parents,
+            teachers, and students.
+          </p>
+        </AnimatedListItem>
+      </AnimatedList>
+
+      <AnimatedStagger className="md:pt-20" stagger={0.09} delayChildren={0.04}>
         <Accordion
           type="single"
           collapsible
           className="w-full space-y-4"
-          defaultValue={`item-0`}
+          defaultValue="item-0"
         >
           {faqData.map((faq, index) => (
-            <AccordionItem
-              key={index}
-              value={`item-${index}`}
-              className="rounded-md border border-[#2D2D2D]/15 px-4 py-2 last:border-b"
-            >
-              <AccordionTrigger
-                className="flex w-full flex-row items-center py-2 text-left font-normal text-[#535353] transition-colors duration-200"
-                style={{ fontSize: "clamp(16px, 2vw, 20px)" }}
+            <AnimatedStaggerItem key={faq.id}>
+              <AccordionItem
+                value={`item-${index}`}
+                className="rounded-md border border-[#2D2D2D]/15 px-4 py-2 last:border-b"
               >
-                <span className="block w-full sm:text-lg md:text-2xl">
-                  {faq.question}
-                </span>
-              </AccordionTrigger>
-
-              <AccordionContent className="flex flex-col gap-4">
-                <p
-                  className="leading-relaxed text-[#535353]/80"
-                  style={{ fontSize: "clamp(14px, 2vw, 16px)" }}
+                <AccordionTrigger
+                  className="flex w-full flex-row items-center py-2 text-left font-normal text-[#535353] transition-colors duration-200"
+                  style={{ fontSize: "clamp(16px, 2vw, 20px)" }}
                 >
-                  <span className="text-sm md:text-xl">{faq.answer}</span>
-                </p>
-              </AccordionContent>
-            </AccordionItem>
+                  <span className="block w-full sm:text-lg md:text-2xl">
+                    {faq.question}
+                  </span>
+                </AccordionTrigger>
+
+                <AccordionContent className="flex flex-col gap-4">
+                  <p
+                    className="leading-relaxed text-[#535353]/80"
+                    style={{ fontSize: "clamp(14px, 2vw, 16px)" }}
+                  >
+                    <span className="text-sm md:text-xl">{faq.answer}</span>
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+            </AnimatedStaggerItem>
           ))}
         </Accordion>
-      </section>
-    </div>
+      </AnimatedStagger>
+    </AnimatedPage>
   )
 }
 
