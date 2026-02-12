@@ -73,6 +73,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
+            export CI=true
             cd ${{ env.DEPLOY_PATH }}
             # Force server to match origin/staging (discard any local changes so pull never blocks)
             git fetch origin staging
