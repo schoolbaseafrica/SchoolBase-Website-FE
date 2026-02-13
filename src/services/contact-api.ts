@@ -14,7 +14,7 @@ export interface ContactResponse {
 
 export function sendContactMessage(payload: ContactPayload) {
   return apiFetch<ContactResponse>(
-    "/contact",
+    "api/v1/contact",
     {
       method: "POST",
       data: payload,
