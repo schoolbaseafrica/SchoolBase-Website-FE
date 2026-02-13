@@ -14,11 +14,11 @@ export interface ContactResponse {
 
 export function sendContactMessage(payload: ContactPayload) {
   return apiFetch<ContactResponse>(
-    "api/v1/contact",
+    "/contact",
     {
       method: "POST",
       data: payload,
     },
-    true // use backend proxy
+    true // use backend proxy -> forwards to API_BASE_URL/contact (where API_BASE_URL includes /api/v1)
   )
 }
