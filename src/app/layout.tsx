@@ -14,7 +14,7 @@ export const viewport = {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://borjigin.emerj.net/"),
+  metadataBase: new URL("https://schoolbase.africa/"),
   title: {
     default: "School Base",
     template: "%s | School Base",
@@ -49,12 +49,17 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/icons/android-chrome-512x512.png",
-        width: 512,
-        height: 512,
-        alt: "School Base logo",
+        url: "/images/home/about/image1.png",
+        alt: "School Base preview",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "School Base",
+    description:
+      "The modern way schools run in Nigeria. Manage attendance, results, timetables, fees, and NFC all in one place. Connect students, teachers, parents, and administrators.",
+    images: ["/images/home/about/image1.png"],
   },
   icons: {
     icon: [
