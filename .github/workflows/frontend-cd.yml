@@ -73,11 +73,13 @@ jobs:
           key_path: ${{ steps.ssh-key.outputs.path }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            set -e
             cd /home/ubuntu/open-school/prod/open-school-portal-FE
             
-            # Ensure we're on main branch and get latest code
+            # Force server to match origin/main (discard any local changes so pull never blocks)
+            git fetch origin main
             git checkout main
-            git pull origin main
+            git reset --hard origin/main
             
             # Install pnpm if not available
             if ! command -v pnpm &> /dev/null; then
@@ -161,11 +163,13 @@ jobs:
           key_path: ${{ steps.ssh-key.outputs.path }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            set -e
             cd /home/ubuntu/open-school/prod/open-school-portal-FE
             
-            # Ensure we're on main branch and get latest code
+            # Force server to match origin/main (discard any local changes so pull never blocks)
+            git fetch origin main
             git checkout main
-            git pull origin main
+            git reset --hard origin/main
             
             # Install pnpm if not available
             if ! command -v pnpm &> /dev/null; then
