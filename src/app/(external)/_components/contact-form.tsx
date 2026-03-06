@@ -12,6 +12,7 @@ const contactSchema = z.object({
   full_name: z.string().min(1, "Name is required"),
   email: z.email("Invalid email address"),
   school_name: z.string().min(1, "School name is required"),
+  contact_number: z.string().regex(/^\d{11}$/, "Contact number must be 11 digits"),
   message: z.string().min(1, "Message cannot be empty"),
 })
 
@@ -22,6 +23,7 @@ export default function ContactForm() {
     full_name: "",
     email: "",
     school_name: "",
+    contact_number: "",
     message: "",
   })
 
@@ -30,6 +32,12 @@ export default function ContactForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
+    if (name === "contact_number") {
+      const digitsOnly = value.replace(/\D/g, "").slice(0, 11)
+      setFormData((prev) => ({ ...prev, [name]: digitsOnly }))
+      return
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
@@ -61,6 +69,7 @@ export default function ContactForm() {
         full_name: "",
         email: "",
         school_name: "",
+        contact_number: "",
         message: "",
       })
     } catch (error) {
@@ -127,6 +136,29 @@ export default function ContactForm() {
             />
             {errors.school_name && (
               <p className="text-sm text-red-500">{errors.school_name}</p>
+            )}
+          </div>
+        </AnimatedListItem>
+
+        <AnimatedListItem>
+          <div>
+            <label htmlFor="contact_number" className="mb-1 block font-medium">
+              Contact Number
+            </label>
+            <Input
+              id="contact_number"
+              type="text"
+              name="contact_number"
+              inputMode="numeric"
+              pattern="^[0-9]{11}$"
+              maxLength={11}
+              value={formData.contact_number}
+              onChange={handleChange}
+              className="w-full"
+              disabled={isLoading}
+            />
+            {errors.contact_number && (
+              <p className="text-sm text-red-500">{errors.contact_number}</p>
             )}
           </div>
         </AnimatedListItem>
