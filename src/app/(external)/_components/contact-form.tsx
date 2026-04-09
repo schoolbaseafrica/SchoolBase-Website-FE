@@ -4,26 +4,53 @@ import { Button } from "@/components/ui/button"
 import React, { useState } from "react"
 import { z } from "zod"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { toast } from "sonner"
 import { sendContactMessage } from "@/services/contact-api"
 import { AnimatedList, AnimatedListItem } from "./page-animations"
+
+const COUNTRY_CODES = [
+  { label: "Nigeria", value: "+234" },
+  { label: "Ghana", value: "+233" },
+  { label: "Kenya", value: "+254" },
+  { label: "South Africa", value: "+27" },
+  { label: "Egypt", value: "+20" },
+  { label: "United States", value: "+1" },
+  { label: "United Kingdom", value: "+44" },
+  { label: "India", value: "+91" },
+]
 
 const contactSchema = z.object({
   full_name: z.string().min(1, "Name is required"),
   email: z.email("Invalid email address"),
   school_name: z.string().min(1, "School name is required"),
-  contact_number: z.string().regex(/^\d{11}$/, "Contact number must be 11 digits"),
+  contact_number: z.string().regex(/^\d{10}$/, "Contact number must be 10 digits"),
+  website: z
+    .string()
+    .trim()
+    .optional()
+    .refine((value) => !value || z.url().safeParse(value).success, {
+      message: "Website must be a valid link",
+    }),
   message: z.string().min(1, "Message cannot be empty"),
 })
 
 type ContactFormData = z.infer<typeof contactSchema>
 
 export default function ContactForm() {
+  const [countryCode, setCountryCode] = useState("+234")
   const [formData, setFormData] = useState<ContactFormData>({
     full_name: "",
     email: "",
     school_name: "",
     contact_number: "",
+    website: "",
     message: "",
   })
 
@@ -33,7 +60,7 @@ export default function ContactForm() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     if (name === "contact_number") {
-      const digitsOnly = value.replace(/\D/g, "").slice(0, 11)
+      const digitsOnly = value.replace(/\D/g, "").slice(0, 10)
       setFormData((prev) => ({ ...prev, [name]: digitsOnly }))
       return
     }
@@ -62,7 +89,11 @@ export default function ContactForm() {
     setIsLoading(true)
 
     try {
-      await sendContactMessage(formData)
+      await sendContactMessage({
+        ...formData,
+        contact_number: `${countryCode}${formData.contact_number}`,
+        website: formData.website?.trim() || undefined,
+      })
       toast.success(`Thank you, ${formData.full_name}! Your message has been sent.`)
 
       setFormData({
@@ -70,6 +101,7 @@ export default function ContactForm() {
         email: "",
         school_name: "",
         contact_number: "",
+        website: "",
         message: "",
       })
     } catch (error) {
@@ -145,21 +177,61 @@ export default function ContactForm() {
             <label htmlFor="contact_number" className="mb-1 block font-medium">
               Contact Number
             </label>
-            <Input
-              id="contact_number"
-              type="text"
-              name="contact_number"
-              inputMode="numeric"
-              pattern="^[0-9]{11}$"
-              maxLength={11}
-              value={formData.contact_number}
-              onChange={handleChange}
-              className="w-full"
-              disabled={isLoading}
-            />
+            <div className="flex">
+              <Select
+                value={countryCode}
+                onValueChange={setCountryCode}
+                disabled={isLoading}
+              >
+                <SelectTrigger className="w-[140px] rounded-r-none border-r-0">
+                  <SelectValue placeholder="Code" />
+                </SelectTrigger>
+                <SelectContent>
+                  {COUNTRY_CODES.map((option) => (
+                    <SelectItem
+                      key={`${option.label}-${option.value}`}
+                      value={option.value}
+                    >
+                      {option.value}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Input
+                id="contact_number"
+                type="text"
+                name="contact_number"
+                inputMode="numeric"
+                pattern="^[0-9]{10}$"
+                maxLength={10}
+                value={formData.contact_number}
+                onChange={handleChange}
+                className="w-full rounded-l-none"
+                disabled={isLoading}
+              />
+            </div>
             {errors.contact_number && (
               <p className="text-sm text-red-500">{errors.contact_number}</p>
             )}
+          </div>
+        </AnimatedListItem>
+
+        <AnimatedListItem>
+          <div>
+            <label htmlFor="website" className="mb-1 block font-medium">
+              Website <span className="text-muted-foreground">(Optional)</span>
+            </label>
+            <Input
+              id="website"
+              type="url"
+              name="website"
+              value={formData.website}
+              onChange={handleChange}
+              className="w-full"
+              placeholder="https://example.com"
+              disabled={isLoading}
+            />
+            {errors.website && <p className="text-sm text-red-500">{errors.website}</p>}
           </div>
         </AnimatedListItem>
 
