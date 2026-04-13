@@ -300,7 +300,6 @@ const transformBackendSubmission = (backendSubmission: {
     },
     academic_session_id: "",
     grades: backendSubmission.grades.map((grade) => {
-      const { firstName, lastName } = parseStudentName(grade.student.name)
       return {
         id: grade.id,
         student_id: grade.student.id,

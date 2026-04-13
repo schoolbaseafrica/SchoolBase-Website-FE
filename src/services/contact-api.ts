@@ -4,6 +4,8 @@ export interface ContactPayload {
   full_name: string
   email: string
   school_name: string
+  contact_number: string
+  website?: string
   message: string
 }
 
