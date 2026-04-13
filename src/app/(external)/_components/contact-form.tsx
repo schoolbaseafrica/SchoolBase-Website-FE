@@ -31,13 +31,6 @@ const contactSchema = z.object({
   email: z.email("Invalid email address"),
   school_name: z.string().min(1, "School name is required"),
   contact_number: z.string().regex(/^\d{10}$/, "Contact number must be 10 digits"),
-  website: z
-    .string()
-    .trim()
-    .optional()
-    .refine((value) => !value || z.url().safeParse(value).success, {
-      message: "Website must be a valid link",
-    }),
   message: z.string().min(1, "Message cannot be empty"),
 })
 
@@ -50,7 +43,6 @@ export default function ContactForm() {
     email: "",
     school_name: "",
     contact_number: "",
-    website: "",
     message: "",
   })
 
@@ -92,7 +84,6 @@ export default function ContactForm() {
       await sendContactMessage({
         ...formData,
         contact_number: `${countryCode}${formData.contact_number}`,
-        website: formData.website?.trim() || undefined,
       })
       toast.success(`Thank you, ${formData.full_name}! Your message has been sent.`)
 
@@ -101,7 +92,6 @@ export default function ContactForm() {
         email: "",
         school_name: "",
         contact_number: "",
-        website: "",
         message: "",
       })
     } catch (error) {
@@ -213,25 +203,6 @@ export default function ContactForm() {
             {errors.contact_number && (
               <p className="text-sm text-red-500">{errors.contact_number}</p>
             )}
-          </div>
-        </AnimatedListItem>
-
-        <AnimatedListItem>
-          <div>
-            <label htmlFor="website" className="mb-1 block font-medium">
-              Website <span className="text-muted-foreground">(Optional)</span>
-            </label>
-            <Input
-              id="website"
-              type="url"
-              name="website"
-              value={formData.website}
-              onChange={handleChange}
-              className="w-full"
-              placeholder="https://example.com"
-              disabled={isLoading}
-            />
-            {errors.website && <p className="text-sm text-red-500">{errors.website}</p>}
           </div>
         </AnimatedListItem>
 
