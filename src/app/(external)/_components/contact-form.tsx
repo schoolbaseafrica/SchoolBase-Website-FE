@@ -1,30 +1,23 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
 import React, { useState } from "react"
 import { z } from "zod"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { COUNTRY_CALLING_CODES } from "@/constants/country-codes"
+import { cn } from "@/lib/utils"
+import { CheckIcon, ChevronsUpDownIcon } from "lucide-react"
 import { toast } from "sonner"
 import { sendContactMessage } from "@/services/contact-api"
 import { AnimatedList, AnimatedListItem } from "./page-animations"
-
-const COUNTRY_CODES = [
-  { label: "Nigeria", value: "+234" },
-  { label: "Ghana", value: "+233" },
-  { label: "Kenya", value: "+254" },
-  { label: "South Africa", value: "+27" },
-  { label: "Egypt", value: "+20" },
-  { label: "United States", value: "+1" },
-  { label: "United Kingdom", value: "+44" },
-  { label: "India", value: "+91" },
-]
 
 const contactSchema = z.object({
   full_name: z.string().min(1, "Name is required"),
@@ -37,7 +30,8 @@ const contactSchema = z.object({
 type ContactFormData = z.infer<typeof contactSchema>
 
 export default function ContactForm() {
-  const [countryCode, setCountryCode] = useState("+234")
+  const [isCountryPickerOpen, setIsCountryPickerOpen] = useState(false)
+  const [selectedCountryName, setSelectedCountryName] = useState("Nigeria")
   const [formData, setFormData] = useState<ContactFormData>({
     full_name: "",
     email: "",
@@ -48,6 +42,10 @@ export default function ContactForm() {
 
   const [errors, setErrors] = useState<Partial<ContactFormData>>({})
   const [isLoading, setIsLoading] = useState(false)
+  const selectedCountry =
+    COUNTRY_CALLING_CODES.find((country) => country.name === selectedCountryName) ??
+    COUNTRY_CALLING_CODES.find((country) => country.name === "Nigeria") ??
+    COUNTRY_CALLING_CODES[0]
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -83,7 +81,7 @@ export default function ContactForm() {
     try {
       await sendContactMessage({
         ...formData,
-        contact_number: `${countryCode}${formData.contact_number}`,
+        contact_number: `${selectedCountry.code}${formData.contact_number}`,
       })
       toast.success(`Thank you, ${formData.full_name}! Your message has been sent.`)
 
@@ -168,25 +166,52 @@ export default function ContactForm() {
               Contact Number
             </label>
             <div className="flex">
-              <Select
-                value={countryCode}
-                onValueChange={setCountryCode}
-                disabled={isLoading}
-              >
-                <SelectTrigger className="w-[140px] rounded-r-none border-r-0">
-                  <SelectValue placeholder="Code" />
-                </SelectTrigger>
-                <SelectContent>
-                  {COUNTRY_CODES.map((option) => (
-                    <SelectItem
-                      key={`${option.label}-${option.value}`}
-                      value={option.value}
-                    >
-                      {option.value}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover open={isCountryPickerOpen} onOpenChange={setIsCountryPickerOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={isCountryPickerOpen}
+                    className="border-input h-12 w-36 justify-between rounded-r-none border-r-0 bg-transparent px-3 text-sm font-normal text-black shadow-xs hover:text-white sm:w-48"
+                    disabled={isLoading}
+                  >
+                    <span className="truncate">
+                      {selectedCountry.name} ({selectedCountry.code})
+                    </span>
+                    <ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[280px] p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search country or code..." />
+                    <CommandList>
+                      <CommandEmpty>No country found.</CommandEmpty>
+                      {COUNTRY_CALLING_CODES.map((country) => (
+                        <CommandItem
+                          key={country.name}
+                          value={`${country.name} ${country.code} ${country.code.replace(/\D/g, "")}`}
+                          className="data-[selected=true]:text-white"
+                          onSelect={() => {
+                            setSelectedCountryName(country.name)
+                            setIsCountryPickerOpen(false)
+                          }}
+                        >
+                          <CheckIcon
+                            className={cn(
+                              "mr-2 size-4",
+                              selectedCountryName === country.name
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {country.name} ({country.code})
+                        </CommandItem>
+                      ))}
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               <Input
                 id="contact_number"
                 type="text"
