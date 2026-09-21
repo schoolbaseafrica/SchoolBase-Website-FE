@@ -29,10 +29,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts",
-    "src/app/(external)/features",
-    "src/app/(portal)/teacher/attendance/student-atte",
-    "src/app/(portal)/teacher/attendance/_hooks"
+    "**/*.mts"
   ],
   "exclude": ["node_modules"]
 }

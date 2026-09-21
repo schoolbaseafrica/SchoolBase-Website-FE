@@ -1,0 +1,11 @@
+.git
+.github
+.husky
+node_modules
+.next
+coverage
+.env
+.env.*
+!.env.example
+pnpm-debug.log*
+README.md

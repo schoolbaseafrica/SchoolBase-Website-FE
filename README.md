@@ -227,6 +227,24 @@ Application will be available at:
 http://localhost:3000
 ```
 
+Copy `.env.example` to `.env.local` and set `API_BASE_URL` to the website API,
+including `/api/v1`. Browser forms submit through the same-origin Next.js proxy,
+so the backend address remains a runtime server setting.
+
+## Container and Coolify
+
+The production `Dockerfile` builds Next.js standalone output, runs as the
+unprivileged Node user, and exposes port `3000`.
+
+```bash
+docker build -t schoolbase-website .
+docker run -e API_BASE_URL=http://host.docker.internal:3008/api/v1 \
+  -p 3000:3000 schoolbase-website
+```
+
+See `schoolbase-deployment/docs/WEBSITE_COOLIFY.md` in the deployment repository
+for the complete frontend, API, database, domain, and environment setup.
+
 ---
 
 ## Development Standards

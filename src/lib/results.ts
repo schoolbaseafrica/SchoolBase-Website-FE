@@ -257,16 +257,6 @@ const transformBackendSubmission = (backendSubmission: {
   created_at: string
   updated_at: string
 }): GradeSubmission => {
-  // Parse student name to get first and last names
-  const parseStudentName = (
-    fullName: string
-  ): { firstName: string; lastName: string } => {
-    const nameParts = fullName.trim().split(/\s+/)
-    const firstName = nameParts[0] || ""
-    const lastName = nameParts.slice(1).join(" ") || ""
-    return { firstName, lastName }
-  }
-
   // Convert status to lowercase
   const status = backendSubmission.status.toLowerCase() as
     | "draft"
@@ -300,7 +290,6 @@ const transformBackendSubmission = (backendSubmission: {
     },
     academic_session_id: "",
     grades: backendSubmission.grades.map((grade) => {
-      const { firstName, lastName } = parseStudentName(grade.student.name)
       return {
         id: grade.id,
         student_id: grade.student.id,
