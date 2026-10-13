@@ -22,7 +22,7 @@ const SocialLinks = () => {
         <InstagramIcon className="size-7 text-white transition-transform duration-300 hover:scale-110 active:scale-95" />
       </Link>
       {/* <Linkedin className="size-5 text-white" /> */}
-      <Link href="https://x.com/school_baseng" target="_blank" rel="noopener noreferrer">
+      <Link href="https://x.com/Schoolbase_afr" target="_blank" rel="noopener noreferrer">
         <XIcon className="size-7 fill-white text-white transition-transform duration-300 ease-out hover:scale-110 active:scale-95" />
       </Link>
     </div>

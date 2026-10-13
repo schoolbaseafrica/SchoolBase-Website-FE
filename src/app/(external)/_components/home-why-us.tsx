@@ -17,7 +17,7 @@ const HomeWhyUs = () => {
       alt: "Fees Management Dashboard with Bar Chart",
     },
     {
-      title: "Smart Attendance (NFC + QR)",
+      title: "Smart Attendance (NFC + Face)",
       description: "Automate attendance tracking with secure, tap-and-go technology.",
       image: "/landing/why2.png",
       alt: "NFC Scanner and Attendance System",

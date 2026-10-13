@@ -84,7 +84,7 @@ const Footer = () => {
               <li className="flex items-start gap-3">
                 <Home size={20} className="mt-1 shrink-0" />
                 <address className="wrap-break-word not-italic">
-                  Wyoming, United States of America
+                  Ikeja, Lagos State, Nigeria
                 </address>
               </li>
             </ul>

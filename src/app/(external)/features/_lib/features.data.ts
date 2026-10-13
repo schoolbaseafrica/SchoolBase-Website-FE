@@ -26,6 +26,7 @@ export const featuresData: FeatureProps[] = [
       "Daily student attendance",
       "Teacher check-in via web or NFC tap",
       "NFC attendance using the mobile app",
+      "Face attendance with an approved student photo",
       "Offline attendance queue + auto-sync",
       "Admin dashboard for attendance summaries",
       "Edit logs with full audit history",
