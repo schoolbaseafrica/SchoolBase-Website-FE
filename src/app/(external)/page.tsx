@@ -14,6 +14,9 @@ import {
   LayoutDashboard,
   ShieldCheck,
   Users,
+  Video,
+  ScanFace,
+  Radio,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import WatchDemoButton from "./_components/watch-demo-button"
@@ -26,8 +29,8 @@ import {
 const features = [
   {
     icon: ClipboardCheck,
-    title: "Attendance",
-    text: "Keep class and lesson attendance organized, with smart check-in options.",
+    title: "Smart attendance",
+    text: "Record daily attendance manually, by NFC tap, or with face check-in.",
   },
   {
     icon: GraduationCap,
@@ -135,7 +138,7 @@ export default function Home() {
               A better way to <span className="text-accent">run your school.</span>
             </h1>
             <p className="mt-7 max-w-xl text-lg leading-8 text-[#656565]">
-              Bring attendance, results, timetables, fees, and your school community
+              Bring attendance, live learning, results, fees, and your school community
               together in one connected workspace.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-3">
@@ -148,10 +151,10 @@ export default function Home() {
             </div>
             <div className="mt-10 flex flex-wrap gap-x-6 gap-y-2 border-t border-[#ece8e8] pt-6 text-sm text-[#666]">
               <span className="flex items-center gap-2">
-                <Check className="text-accent size-4" /> One place for your school
+                <Check className="text-accent size-4" /> NFC & face attendance
               </span>
               <span className="flex items-center gap-2">
-                <Check className="text-accent size-4" /> Built for every role
+                <Check className="text-accent size-4" /> Virtual classes & meetings
               </span>
             </div>
           </AnimatedBlock>
@@ -280,6 +283,70 @@ export default function Home() {
               Explore all features <ArrowRight className="size-4" />
             </Link>
           </div>
+        </div>
+      </section>
+
+      <section
+        id="connected-school"
+        className="site-section border-y border-[#f0e9ea] bg-white py-20 md:py-28"
+      >
+        <div className="site-wrap">
+          <AnimatedBlock className="mx-auto max-w-2xl text-center">
+            <p className="site-eyebrow">BEYOND THE BASICS</p>
+            <h2 className="site-heading mt-4">
+              A school that stays{" "}
+              <span className="text-accent">present and connected.</span>
+            </h2>
+            <p className="site-copy mt-5">
+              Take attendance in the way that fits your school, teach online, and bring
+              your community together.
+            </p>
+          </AnimatedBlock>
+          <AnimatedStagger className="mt-12 grid gap-5 lg:grid-cols-2" stagger={0.12}>
+            <AnimatedStaggerItem className="site-card p-7 sm:p-9">
+              <span className="site-icon">
+                <ScanFace className="size-5" />
+              </span>
+              <h3 className="mt-6 text-2xl font-semibold tracking-tight">
+                Attendance that fits your day
+              </h3>
+              <p className="mt-3 max-w-lg leading-7 text-[#666]">
+                Record student attendance manually, with an NFC tap, or with face check-in
+                against an approved student photo. Keep the record in one place.
+              </p>
+              <div className="mt-7 flex flex-wrap gap-2">
+                {["Manual", "NFC tap", "Face check-in"].map((method) => (
+                  <span
+                    key={method}
+                    className="rounded-full border border-[#f0dee0] bg-[#fff8f9] px-3 py-1.5 text-sm font-medium text-[#8c3740]"
+                  >
+                    {method}
+                  </span>
+                ))}
+              </div>
+            </AnimatedStaggerItem>
+            <AnimatedStaggerItem className="site-card p-7 sm:p-9">
+              <span className="site-icon">
+                <Video className="size-5" />
+              </span>
+              <h3 className="mt-6 text-2xl font-semibold tracking-tight">
+                Classrooms and meetings, online
+              </h3>
+              <p className="mt-3 max-w-lg leading-7 text-[#666]">
+                Teachers can open virtual classrooms for their assigned classes.
+                Administrators can schedule video meetings and invite the people who need
+                to join.
+              </p>
+              <div className="mt-7 flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-2 rounded-full border border-[#f0dee0] bg-[#fff8f9] px-3 py-1.5 text-sm font-medium text-[#8c3740]">
+                  <Radio className="size-4" /> Virtual classrooms
+                </span>
+                <span className="rounded-full border border-[#f0dee0] bg-[#fff8f9] px-3 py-1.5 text-sm font-medium text-[#8c3740]">
+                  Scheduled meetings
+                </span>
+              </div>
+            </AnimatedStaggerItem>
+          </AnimatedStagger>
         </div>
       </section>
 
