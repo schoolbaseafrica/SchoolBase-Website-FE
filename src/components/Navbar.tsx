@@ -75,52 +75,39 @@ const Navbar = () => {
         createPortal(
           <>
             <div
-              className="fixed inset-0 z-[60] bg-black/20 lg:hidden"
+              className="fixed inset-0 z-40 bg-black/10 lg:hidden"
               onClick={closeMobileMenu}
               aria-hidden="true"
             />
-            <div
+            <nav
               id="mobile-site-menu"
-              className="fixed top-0 right-0 z-[70] h-dvh w-80 max-w-[85vw] bg-white shadow-xl lg:hidden"
+              aria-label="Mobile navigation"
+              className="fixed top-[5.5rem] right-3 left-3 z-[60] max-h-[calc(100dvh-6.25rem)] overflow-y-auto rounded-3xl border border-[#efe5e6] bg-white p-3 shadow-[0_18px_48px_rgba(40,25,28,.16)] sm:right-6 sm:left-auto sm:w-96 lg:hidden"
             >
-              <div className="flex h-full flex-col">
-                <div className="flex items-center justify-end px-4 py-6">
-                  <button
-                    onClick={closeMobileMenu}
-                    className="p-2 text-[#2D2D2D] transition-colors hover:text-[#535353]"
-                    aria-label="Close menu"
-                  >
-                    <X className="size-6" />
-                  </button>
-                </div>
-                <div className="flex flex-1 flex-col overflow-y-auto px-4 py-6">
-                  {navItems.map((item) => {
-                    const isActive = pathname === item.path
-                    return (
-                      <Link
-                        key={item.path}
-                        href={item.path}
-                        onClick={closeMobileMenu}
-                        className={`px-4 py-3 text-lg font-medium transition-colors ${isActive ? "text-[#2D2D2D]" : "text-[#535353]"} hover:bg-gray-50 hover:text-[#2D2D2D]`}
-                      >
-                        {item.label}
-                      </Link>
-                    )
-                  })}
-                  <div className="mt-2 px-4">
-                    <Link href="/contact-us">
-                      <Button
-                        variant="outline"
-                        className="w-full"
-                        onClick={closeMobileMenu}
-                      >
-                        Consult Us
-                      </Button>
+              <div className="flex flex-col gap-1">
+                {navItems.map((item) => {
+                  const isActive = pathname === item.path
+                  return (
+                    <Link
+                      key={item.path}
+                      href={item.path}
+                      onClick={closeMobileMenu}
+                      aria-current={isActive ? "page" : undefined}
+                      className={`rounded-xl px-4 py-3 text-base font-medium transition-colors ${isActive ? "text-accent bg-[#fbebec]" : "text-[#535353] hover:bg-gray-50 hover:text-[#2D2D2D]"}`}
+                    >
+                      {item.label}
                     </Link>
-                  </div>
-                </div>
+                  )
+                })}
               </div>
-            </div>
+              <div className="mt-2 border-t border-[#efe5e6] px-2 pt-3">
+                <Button asChild className="h-11 w-full rounded-full text-sm">
+                  <Link href="/contact-us" onClick={closeMobileMenu}>
+                    Consult Us
+                  </Link>
+                </Button>
+              </div>
+            </nav>
           </>,
           document.body
         )}
