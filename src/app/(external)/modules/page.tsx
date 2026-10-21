@@ -26,8 +26,6 @@ import {
   AnimatedList,
   AnimatedListItem,
   AnimatedPage,
-  AnimatedStagger,
-  AnimatedStaggerItem,
 } from "../_components/page-animations"
 
 const modules = [
@@ -232,7 +230,7 @@ const ModuleCard = ({ module }: { module: (typeof modules)[0] }) => {
   }, [isFlipped])
 
   return (
-    <AnimatedStaggerItem className="group h-[400px]" style={{ perspective: "1000px" }}>
+    <AnimatedBlock className="group h-[400px]" style={{ perspective: "1000px" }}>
       <div
         className={cn(
           "relative h-full w-full transition-all duration-500",
@@ -326,7 +324,7 @@ const ModuleCard = ({ module }: { module: (typeof modules)[0] }) => {
           </div>
         </Card>
       </div>
-    </AnimatedStaggerItem>
+    </AnimatedBlock>
   )
 }
 
@@ -343,11 +341,11 @@ const ModulesPage = () => {
           </p>
         </AnimatedBlock>
 
-        <AnimatedStagger className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {modules.map((module, index) => (
             <ModuleCard key={index} module={module} />
           ))}
-        </AnimatedStagger>
+        </div>
       </div>
     </AnimatedPage>
   )
