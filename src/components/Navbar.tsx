@@ -27,21 +27,21 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="fixed top-0 right-0 left-0 z-50 border-b border-gray-100 bg-[#fffbfc] py-4 lg:py-6">
-      <div className="relative container flex items-center justify-between">
+    <nav className="fixed top-3 right-3 left-3 z-50 mx-auto max-w-[1180px] rounded-full border border-[#efe5e6] bg-white/95 px-4 py-3 shadow-[0_8px_30px_rgba(40,25,28,.07)] backdrop-blur-md sm:right-6 sm:left-6 lg:px-7">
+      <div className="relative flex items-center justify-between">
         <Link href="/">
           <Logo />
         </Link>
 
         {/* Desktop Navigation - Centered */}
-        <section className="absolute left-1/2 hidden -translate-x-1/2 gap-6 text-lg font-medium lg:flex lg:gap-10">
+        <section className="absolute left-1/2 hidden -translate-x-1/2 gap-3 text-sm font-medium lg:flex lg:gap-5">
           {navItems.map((item) => {
             const isActive = pathname === item.path
             return (
               <Link
                 key={item.path}
                 href={item.path}
-                className={`px-3 py-2 transition-colors duration-200 ${isActive ? "text-accent" : "text-[#535353]"} hover:text-accent/70`}
+                className={`px-2 py-2 transition-colors duration-200 ${isActive ? "text-accent" : "text-[#535353]"} hover:text-accent`}
               >
                 <span className="font-medium">{item.label}</span>
               </Link>
@@ -52,9 +52,7 @@ const Navbar = () => {
         {/* Desktop Button */}
         <div className="hidden lg:block">
           <Link href="/contact-us">
-            <Button variant="outline" className="">
-              Consult Us
-            </Button>
+            <Button className="h-10 rounded-full px-5 text-sm">Consult Us</Button>
           </Link>
         </div>
 
@@ -63,6 +61,7 @@ const Navbar = () => {
           onClick={toggleMobileMenu}
           className="p-2 text-[#2D2D2D] transition-colors hover:text-[#535353] lg:hidden"
           aria-label="Toggle menu"
+          aria-expanded={isMobileMenuOpen}
         >
           {isMobileMenuOpen ? <X className="size-6" /> : <Menu className="size-6" />}
         </button>
@@ -75,7 +74,7 @@ const Navbar = () => {
               onClick={closeMobileMenu}
             />
             <div
-              className={`fixed top-0 right-0 z-50 h-full w-80 max-w-[85vw] bg-[#fffbfc] shadow-xl transition-transform duration-300 ease-out lg:hidden ${
+              className={`fixed top-0 right-0 z-50 h-full w-80 max-w-[85vw] bg-white shadow-xl transition-transform duration-300 ease-out lg:hidden ${
                 isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
               }`}
             >

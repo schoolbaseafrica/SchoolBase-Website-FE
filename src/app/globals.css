@@ -1,6 +1,89 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+.site-wrap {
+  width: min(100% - 2rem, 1160px);
+  margin-inline: auto;
+}
+.site-eyebrow {
+  color: #da3743;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+.site-heading {
+  font-size: clamp(2.25rem, 4.4vw, 3.9rem);
+  line-height: 1.09;
+  letter-spacing: -0.045em;
+  font-weight: 700;
+}
+.site-copy {
+  color: #666;
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+.site-card,
+.site-float-card {
+  border: 1px solid #efe8e9;
+  border-radius: 1.25rem;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(50, 25, 30, 0.03);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+.site-float-card {
+  box-shadow: 0 16px 35px rgba(50, 25, 30, 0.1);
+}
+.site-icon {
+  display: inline-flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #fbebec;
+  color: #da3743;
+}
+.site-button,
+.site-button-outline {
+  height: 3rem;
+  border-radius: 999px;
+  padding-inline: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.site-button-outline {
+  border: 1px solid #e6d9db;
+  color: #2d2d2d;
+  background: #fff;
+}
+.site-button-outline:hover {
+  border-color: #da3743;
+  color: #da3743;
+  background: #fff;
+}
+.site-faq summary::-webkit-details-marker {
+  display: none;
+}
+@media (hover: hover) {
+  .site-card:hover {
+    transform: translateY(-4px);
+    border-color: #e9ced1;
+    box-shadow: 0 15px 35px rgba(50, 25, 30, 0.08);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-card,
+  .site-float-card {
+    transition: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 html {
   scrollbar-gutter: stable;
   scroll-behavior: smooth;

@@ -12,7 +12,7 @@ export default function ExternalLayout({ children }: { children: React.ReactNode
   return (
     <>
       <Navbar />
-      <main className="pt-16 md:pt-22 lg:pt-26">{children}</main>
+      <main className="pt-20">{children}</main>
       <Footer />
     </>
   )
