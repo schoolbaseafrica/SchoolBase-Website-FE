@@ -128,7 +128,7 @@ export default function Home() {
 
   return (
     <div className="site-home overflow-hidden bg-[#fdfcfc] text-[#252525]">
-      <section className="site-section relative pt-16 pb-20 md:pt-24 lg:pt-32 lg:pb-28">
+      <section className="site-section site-hero-gradient relative pt-16 pb-20 md:pt-24 lg:pt-32 lg:pb-28">
         <div className="site-wrap grid items-center gap-14 lg:grid-cols-[.92fr_1.08fr] lg:gap-16">
           <AnimatedBlock variant="left" className="relative z-10">
             <span className="site-eyebrow inline-flex items-center gap-2 rounded-full border border-[#f1d7d9] bg-white px-4 py-2">
@@ -249,7 +249,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="features" className="site-section py-20 md:py-28">
+      <section id="features" className="site-section site-soft-gradient py-20 md:py-28">
         <div className="site-wrap">
           <AnimatedBlock className="mx-auto max-w-2xl text-center">
             <p className="site-eyebrow">ONE CONNECTED PLATFORM</p>
@@ -392,7 +392,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="for-who" className="site-section py-20 md:py-28">
+      <section id="for-who" className="site-section site-soft-gradient py-20 md:py-28">
         <div className="site-wrap">
           <AnimatedBlock className="mx-auto max-w-2xl text-center">
             <p className="site-eyebrow">MADE FOR YOUR COMMUNITY</p>
@@ -456,7 +456,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="site-section bg-[#28262a] py-20 text-white md:py-28">
+      <section className="site-section site-dark-gradient py-20 text-white md:py-28">
         <div className="site-wrap grid items-center gap-12 lg:grid-cols-2">
           <AnimatedBlock variant="left">
             <p className="site-eyebrow text-[#ffb9bf]">WHY SCHOOLBASE</p>
@@ -524,7 +524,7 @@ export default function Home() {
 
       <section className="site-section bg-white pb-20 md:pb-28">
         <div className="site-wrap">
-          <div className="bg-accent rounded-[2rem] px-7 py-12 text-white sm:px-12 md:flex md:items-center md:justify-between md:gap-8 md:py-16">
+          <div className="site-cta-gradient rounded-[2rem] px-7 py-12 text-white sm:px-12 md:flex md:items-center md:justify-between md:gap-8 md:py-16">
             <div>
               <p className="text-xs font-bold tracking-[.18em] text-white/75">
                 LET’S GET STARTED

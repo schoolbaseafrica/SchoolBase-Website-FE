@@ -18,6 +18,7 @@ import {
   MessageSquare,
   Smartphone,
   ArrowRight,
+  Video,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -57,7 +58,7 @@ const modules = [
   {
     title: "Attendance Module",
     description:
-      "Handles daily attendance for students and teachers, including class attendance, NFC tap attendance, and attendance analytics.",
+      "Handles daily attendance for students and teachers, including class attendance, NFC tap and face check-in, and attendance analytics.",
     icon: CalendarCheck,
     features: [
       {
@@ -70,11 +71,40 @@ const modules = [
       },
       {
         name: "NFC attendance integration",
-        description: "Use NFC tap to take attendance quickly.",
+        description: "Use an NFC tap in the mobile app to record attendance quickly.",
+      },
+      {
+        name: "Face check-in",
+        description:
+          "Check a student's face against their approved photo for attendance.",
       },
       {
         name: "Attendance analytics",
         description: "View charts and reports showing attendance patterns.",
+      },
+    ],
+  },
+  {
+    title: "Virtual Classrooms & Meetings Module",
+    description:
+      "Connect assigned teachers and students in live classrooms, and bring invited school members together in scheduled video meetings.",
+    icon: Video,
+    features: [
+      {
+        name: "Virtual classrooms",
+        description: "Assigned teachers can open a classroom for their students.",
+      },
+      {
+        name: "Live teaching tools",
+        description: "Use the classroom board and chat during a live lesson.",
+      },
+      {
+        name: "Scheduled meetings",
+        description: "Admins can create video meetings with a start and end time.",
+      },
+      {
+        name: "Targeted invitations",
+        description: "Invite specific people, classes, or school roles to a meeting.",
       },
     ],
   },
@@ -230,10 +260,10 @@ const ModuleCard = ({ module }: { module: (typeof modules)[0] }) => {
               {module.description}
             </CardDescription>
           </CardHeader>
-          <CardContent className="pb-6">
+          <CardContent className="flex justify-start pb-6">
             <Button
               onClick={() => setIsFlipped(true)}
-              className="group/btn w-full"
+              className="group/btn h-10 w-auto rounded-full px-5 text-sm"
               variant="default"
             >
               Learn More
@@ -289,7 +319,7 @@ const ModuleCard = ({ module }: { module: (typeof modules)[0] }) => {
             <Button
               onClick={() => setIsFlipped(false)}
               variant="outline"
-              className="w-full"
+              className="h-10 w-auto rounded-full px-5 text-sm"
             >
               Back to Overview
             </Button>
@@ -302,12 +332,15 @@ const ModuleCard = ({ module }: { module: (typeof modules)[0] }) => {
 
 const ModulesPage = () => {
   return (
-    <AnimatedPage className="bg-background min-h-screen py-12 md:py-20">
+    <AnimatedPage className="site-soft-gradient min-h-screen py-12 md:py-20">
       <div className="container mx-auto px-4">
         <AnimatedBlock className="mx-auto mb-16 flex max-w-220 flex-col gap-4">
-          <h1 className="text-center text-2xl font-medium text-[#2d2d2d] md:text-3xl">
-            Modules
-          </h1>
+          <p className="site-eyebrow text-center">SCHOOLBASE PLATFORM</p>
+          <h1 className="site-heading text-center">Modules</h1>
+          <p className="site-copy text-center">
+            The tools that keep academics, attendance, communication, and school
+            operations connected.
+          </p>
         </AnimatedBlock>
 
         <AnimatedStagger className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

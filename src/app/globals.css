@@ -5,6 +5,27 @@
   width: min(100% - 2rem, 1160px);
   margin-inline: auto;
 }
+.site-hero-gradient {
+  background:
+    radial-gradient(ellipse 48% 55% at 88% 32%, rgba(218, 55, 67, 0.12), transparent 76%),
+    radial-gradient(ellipse 38% 42% at 4% 92%, rgba(251, 235, 236, 0.9), transparent 80%),
+    linear-gradient(135deg, #fff 0%, #fff9fa 55%, #fdfcfc 100%);
+}
+.site-soft-gradient {
+  background:
+    radial-gradient(ellipse 52% 65% at 0% 0%, rgba(251, 235, 236, 0.82), transparent 78%),
+    linear-gradient(145deg, #fff 12%, #fff7f8 100%);
+}
+.site-dark-gradient {
+  background:
+    radial-gradient(ellipse 55% 90% at 5% 100%, rgba(218, 55, 67, 0.3), transparent 75%),
+    linear-gradient(115deg, #272429 0%, #33252a 55%, #212025 100%);
+}
+.site-cta-gradient {
+  background:
+    radial-gradient(circle at 94% 12%, rgba(255, 255, 255, 0.2), transparent 32%),
+    linear-gradient(115deg, #b92733 0%, #da3743 58%, #e85d68 100%);
+}
 .site-eyebrow {
   color: #da3743;
   font-size: 0.7rem;
