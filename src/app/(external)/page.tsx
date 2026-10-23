@@ -20,6 +20,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import WatchDemoButton from "./_components/watch-demo-button"
+import { NewBadge } from "./_components/new-badge"
 import {
   AnimatedBlock,
   AnimatedStagger,
@@ -134,8 +135,8 @@ export default function Home() {
             <span className="site-eyebrow inline-flex items-center gap-2 rounded-full border border-[#f1d7d9] bg-white px-4 py-2">
               <span className="bg-accent size-2 rounded-full" /> SCHOOLBASE FOR SCHOOLS
             </span>
-            <h1 className="mt-7 max-w-[11ch] text-[clamp(3.25rem,6vw,5.8rem)] leading-[1.03] font-bold tracking-[-.055em]">
-              A better way to <span className="text-accent">run your school.</span>
+            <h1 className="mt-7 max-w-[14ch] text-[clamp(3.25rem,6vw,5.8rem)] leading-[1.03] font-bold tracking-[-.055em]">
+              The Modern Way <span className="text-accent">Schools Run In Africa</span>
             </h1>
             <p className="mt-7 max-w-xl text-lg leading-8 text-[#656565]">
               Bring attendance, live learning, results, fees, and your school community
@@ -151,10 +152,12 @@ export default function Home() {
             </div>
             <div className="mt-10 flex flex-wrap gap-x-6 gap-y-2 border-t border-[#ece8e8] pt-6 text-sm text-[#666]">
               <span className="flex items-center gap-2">
-                <Check className="text-accent size-4" /> NFC & face attendance
+                <Check className="text-accent size-4" /> NFC & face attendance{" "}
+                <NewBadge />
               </span>
               <span className="flex items-center gap-2">
-                <Check className="text-accent size-4" /> Virtual classes & meetings
+                <Check className="text-accent size-4" /> Virtual classes & meetings{" "}
+                <NewBadge />
               </span>
             </div>
           </AnimatedBlock>

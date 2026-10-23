@@ -1,5 +1,6 @@
 import Image from "next/image"
 import { IoIosCheckbox } from "react-icons/io"
+import { NewBadge } from "../../_components/new-badge"
 import {
   AnimatedBlock,
   AnimatedList,
@@ -48,11 +49,7 @@ const FeatureSection = ({
               {number}
             </p>
             <p className="text-lg font-bold text-[#2d2d2d] sm:text-xl">{title}</p>
-            {number === 2 && (
-              <span className="rounded-full bg-[#e8f7ef] px-2 py-1 text-xs font-semibold text-[#117b4c]">
-                New: Face attendance
-              </span>
-            )}
+            {number === 2 && <NewBadge />}
           </div>
         </AnimatedStaggerItem>
 
