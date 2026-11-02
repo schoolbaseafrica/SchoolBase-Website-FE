@@ -1,11 +1,23 @@
 import type { NextConfig } from "next"
 import withPWAInit from "next-pwa"
+// next-pwa does not publish TypeScript declarations for its default cache rules.
+// @ts-expect-error no declaration for next-pwa/cache
+import defaultCache from "next-pwa/cache"
 
 const withPWA = withPWAInit({
   dest: "public",
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === "development",
+  runtimeCaching: [
+    {
+      urlPattern: ({ url }: { url: URL }) =>
+        url.origin === self.origin &&
+        (url.pathname === "/admin" || url.pathname.startsWith("/admin/")),
+      handler: "NetworkOnly",
+    },
+    ...defaultCache,
+  ],
 })
 
 const nextConfig: NextConfig = {

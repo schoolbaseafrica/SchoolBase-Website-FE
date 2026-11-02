@@ -1,5 +1,9 @@
 # SCHOOLBASE
 
+## Private operator dashboard
+
+`/admin` is the SchoolBase staff dashboard for registered schools, availability, staff-login activity, deployment state, capacity readings, seven-day trends, and active capacity alerts. It uses server-side calls to the separate platform API. Set `PLATFORM_API_ORIGIN` to its HTTPS origin in the website server environment. The operator session is kept in a path-scoped, HTTP-only cookie and is never exposed through a browser API response. The dashboard shows missing or stale readings as unavailable; a recently received reading is still pending source verification until the P1.8 pilot.
+
 Schoolbase is a modern, high-performance school management frontend built with **Next.js**, **TypeScript**, **TailwindCSS**, **Framer Motion**, **TanStack Query**, **Zod**, and **ShadCN UI**. Each school runs on its own dedicated instance for privacy, customization, and smooth experiences across Admins, Teachers, Students, and Parents.
 
 ## Why it matters
