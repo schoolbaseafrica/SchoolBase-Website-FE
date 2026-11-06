@@ -120,8 +120,24 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         <h2 className="text-xl font-bold">Capacity by source</h2>
         <p className="mt-1 text-sm text-slate-600">
           Current means recently received, pending live source verification. Stale
-          readings are unavailable; charts show historical hourly averages.
+          readings are unavailable. Infrastructure collector charts show historical hourly
+          averages.
         </p>
+        <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-5">
+          <h3 className="font-bold">School-reported database size</h3>
+          <p className="mt-2 text-2xl font-bold">
+            {formatMetric({
+              metric: "database_bytes",
+              value: status.database_size?.database_bytes ?? null,
+              observed_at: status.database_size?.reported_at ?? null,
+              collection_status: status.database_size?.collection_status ?? "unknown",
+            })}
+          </p>
+          <p className="mt-2 text-xs text-slate-500">
+            Database: {status.database_size?.database_name || "Unavailable"} · Source:
+            school backend · Observed: {formatTime(status.database_size?.reported_at)}
+          </p>
+        </div>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           {metrics.sources.map((source) => (
             <div
@@ -168,7 +184,8 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           ))}
           {!metrics.sources.length && (
             <p className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-600">
-              No capacity collector configured. All capacity signals are unavailable.
+              No infrastructure collector configured. Other capacity signals are
+              unavailable.
             </p>
           )}
         </div>

@@ -39,6 +39,14 @@ export type SchoolStatus = {
     collection_status: "current" | "stale" | "unknown"
     source: string | null
   }
+  database_size: {
+    database_name: string | null
+    database_bytes: number | null
+    reported_at: string | null
+    received_at: string | null
+    collection_status: "current" | "stale" | "unknown"
+    source: string | null
+  }
   staff_activity: {
     last_staff_login_at: string | null
     last_received_at: string | null
@@ -148,7 +156,17 @@ export function formatMetric(metric: Metric) {
   if (metric.value === null || metric.collection_status !== "current")
     return "Unavailable"
   if (metric.metric.endsWith("_bytes")) {
-    return `${(metric.value / 1024 ** 3).toLocaleString("en-NG", { maximumFractionDigits: 2 })} GiB`
+    const unit =
+      metric.value >= 1024 ** 3
+        ? "GiB"
+        : metric.value >= 1024 ** 2
+          ? "MiB"
+          : metric.value >= 1024
+            ? "KiB"
+            : "B"
+    const divisor =
+      unit === "GiB" ? 1024 ** 3 : unit === "MiB" ? 1024 ** 2 : unit === "KiB" ? 1024 : 1
+    return `${(metric.value / divisor).toLocaleString("en-NG", { maximumFractionDigits: 2 })} ${unit}`
   }
   if (metric.metric.includes("percent")) return `${metric.value.toFixed(1)}%`
   if (metric.metric.endsWith("_ms")) return `${metric.value.toFixed(0)} ms`
