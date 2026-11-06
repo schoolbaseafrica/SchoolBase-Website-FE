@@ -24,11 +24,13 @@ function tone(status: string) {
 }
 
 export default async function Page() {
+  let operator: { role: string }
   let schools: School[]
   let shared: Metrics
   let alerts: CapacityAlert[]
   try {
-    ;[schools, shared, alerts] = await Promise.all([
+    ;[operator, schools, shared, alerts] = await Promise.all([
+      platformRequest<{ role: string }>("/operators/me"),
       platformRequest<School[]>("/schools"),
       platformRequest<Metrics>("/metrics/shared"),
       platformRequest<CapacityAlert[]>("/alerts"),
@@ -166,9 +168,20 @@ export default async function Page() {
         </div>
       </section>
       <section className="mt-8">
-        <div className="mb-4 flex items-end justify-between">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <h2 className="text-xl font-bold">Schools</h2>
-          <span className="text-sm text-slate-500">Open a school for source details</span>
+          {operator.role === "operator" || operator.role === "platform_admin" ? (
+            <Link
+              href="/admin/schools/new"
+              className="rounded-full bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700"
+            >
+              Add school
+            </Link>
+          ) : (
+            <span className="text-sm text-slate-500">
+              Open a school for source details
+            </span>
+          )}
         </div>
         <div className="grid gap-3">
           {rows.map(({ school, status }) => (

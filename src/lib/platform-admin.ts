@@ -3,6 +3,12 @@ import { cookies } from "next/headers"
 
 export const platformCookie = "sb_platform_session"
 
+export class PlatformRequestError extends Error {
+  constructor(public readonly status: number) {
+    super(`Platform request failed with status ${status}`)
+  }
+}
+
 export type School = {
   id: string
   slug: string
@@ -114,7 +120,7 @@ export async function platformRequest<T>(
     signal: AbortSignal.timeout(8000),
   })
   if (response.status === 401) throw new Error("Unauthorized")
-  if (!response.ok) throw new Error("Platform API unavailable")
+  if (!response.ok) throw new PlatformRequestError(response.status)
   return response.json() as Promise<T>
 }
 
