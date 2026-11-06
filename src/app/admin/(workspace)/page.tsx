@@ -24,6 +24,15 @@ function tone(status: string) {
   return "bg-slate-100 text-slate-600"
 }
 
+function compactImageRef(ref: string | null | undefined) {
+  if (!ref) return "Unavailable"
+  const combined = /:fe-([a-f0-9]{8,})-be-([a-f0-9]{8,})$/.exec(ref)
+  if (combined) return `fe-${combined[1].slice(0, 7)}…be-${combined[2].slice(0, 7)}`
+  const digest = /@sha256:([a-f0-9]{64})$/.exec(ref)
+  if (digest) return `sha256:${digest[1].slice(0, 8)}…${digest[1].slice(-8)}`
+  return ref.length > 28 ? `${ref.slice(0, 14)}…${ref.slice(-10)}` : ref
+}
+
 export default async function Page() {
   let operator: { role: string }
   let schools: School[]
@@ -223,8 +232,13 @@ export default async function Page() {
                 </p>
                 <p>
                   School image:{" "}
-                  <strong className="break-all">
-                    {status?.runtime_image?.image_ref || "Unavailable"}
+                  <strong title={status?.runtime_image?.image_ref || undefined}>
+                    <span className="sr-only">
+                      {status?.runtime_image?.image_ref || "Unavailable"}
+                    </span>
+                    <span aria-hidden="true">
+                      {compactImageRef(status?.runtime_image?.image_ref)}
+                    </span>
                   </strong>
                 </p>
               </div>
