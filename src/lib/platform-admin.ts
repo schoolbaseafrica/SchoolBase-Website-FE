@@ -29,6 +29,7 @@ export type SchoolStatus = {
     state: string
     image_tag: string | null
     source: string | null
+    source_reference: string | null
     observed_at: string | null
   }
   staff_activity: {

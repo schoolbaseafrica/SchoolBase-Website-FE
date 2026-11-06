@@ -163,3 +163,53 @@ export async function createSchool(
   revalidatePath("/admin")
   redirect(`/admin/schools/${school.slug}`)
 }
+
+export async function recordSchoolDeployment(
+  _state: string | null,
+  form: FormData
+): Promise<string | null> {
+  const slug = String(form.get("slug") || "")
+  const state = String(form.get("state") || "")
+  const image_tag = String(form.get("image_tag") || "").trim()
+  const source_reference = String(form.get("source_reference") || "").trim()
+  const reason = String(form.get("reason") || "").trim()
+
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 80)
+    return "Invalid school. Reload and try again."
+  if (!["pending", "running", "succeeded", "failed", "unknown"].includes(state))
+    return "Choose the deployment result shown in Coolify."
+  if (
+    image_tag &&
+    (image_tag.length > 500 ||
+      !/^ghcr\.io\/[a-z0-9._/-]+(?:@[a-z0-9]+:[a-f0-9]+|:[A-Za-z0-9._-]+)$/.test(
+        image_tag
+      ))
+  )
+    return "Enter a full immutable GHCR image tag or digest."
+  if (state === "succeeded" && !image_tag)
+    return "Enter the image reference used by the successful deployment."
+  if (source_reference.length > 200 || !reason || reason.length > 1000)
+    return "Enter a reason of up to 1,000 characters and a shorter deployment reference."
+
+  try {
+    await platformRequest(`/schools/${slug}/deployments`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        state,
+        image_tag: image_tag || null,
+        source_reference: source_reference || null,
+        reason,
+      }),
+    })
+  } catch (error) {
+    if (error instanceof PlatformRequestError && error.status === 403)
+      return "Your operator role cannot record deployments."
+    if (error instanceof Error && error.message === "Unauthorized")
+      return "Your session expired. Sign in again."
+    return "The deployment observation could not be saved. Try again."
+  }
+  revalidatePath("/admin")
+  revalidatePath(`/admin/schools/${slug}`)
+  return null
+}

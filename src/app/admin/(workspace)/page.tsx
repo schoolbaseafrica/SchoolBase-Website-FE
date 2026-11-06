@@ -218,7 +218,8 @@ export default async function Page() {
                   </strong>
                 </p>
                 <p>
-                  Deployment: <strong>{status?.deployment.state || "unknown"}</strong>
+                  Last deployment:{" "}
+                  <strong>{status?.deployment.state || "unknown"}</strong>
                 </p>
               </div>
             </Link>

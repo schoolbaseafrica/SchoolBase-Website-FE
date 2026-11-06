@@ -10,6 +10,7 @@ import {
   platformRequest,
 } from "@/lib/platform-admin"
 import { Trend } from "./trend"
+import { DeploymentForm } from "./deployment-form"
 
 export const metadata: Metadata = {
   title: "School status",
@@ -23,12 +24,14 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   let status: SchoolStatus
   let metrics: Metrics
   let history: MetricHistory
+  let operator: { role: string }
   try {
-    ;[school, status, metrics, history] = await Promise.all([
+    ;[school, status, metrics, history, operator] = await Promise.all([
       platformRequest<School>(`/schools/${slug}`),
       platformRequest<SchoolStatus>(`/schools/${slug}/status`),
       platformRequest<Metrics>(`/schools/${slug}/metrics`),
       platformRequest<MetricHistory>(`/schools/${slug}/metrics/history`),
+      platformRequest<{ role: string }>("/operators/me"),
     ])
   } catch {
     return (
@@ -55,8 +58,12 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             {school.slug} · {school.lifecycle_state}
           </p>
         </div>
-        <p className="rounded-full bg-slate-100 px-4 py-2 text-sm">
-          Image: {status.deployment.image_tag || school.image_tag || "Unavailable"}
+        <p className="rounded-full bg-slate-100 px-4 py-2 text-sm break-all">
+          {status.deployment.image_tag
+            ? `Last recorded image: ${status.deployment.image_tag}`
+            : school.image_tag
+              ? `Registry image: ${school.image_tag}`
+              : "Image: Unavailable"}
         </p>
       </div>
       <section className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -85,7 +92,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
               "school report",
             ],
             [
-              "Deployment",
+              "Last deployment",
               status.deployment.state,
               status.deployment.observed_at,
               status.deployment.source,
@@ -103,6 +110,14 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           </div>
         ))}
       </section>
+      {status.deployment.source_reference && (
+        <p className="mt-3 text-xs break-all text-slate-600">
+          Deployment reference: {status.deployment.source_reference}
+        </p>
+      )}
+      {(operator.role === "operator" || operator.role === "platform_admin") && (
+        <DeploymentForm slug={school.slug} />
+      )}
       <section className="mt-10">
         <h2 className="text-xl font-bold">Capacity by source</h2>
         <p className="mt-1 text-sm text-slate-600">
