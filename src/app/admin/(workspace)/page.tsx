@@ -10,6 +10,7 @@ import {
   formatMetric,
 } from "@/lib/platform-admin"
 import { AcknowledgeForm } from "./acknowledge-form"
+import { StatusRefresh } from "./status-refresh"
 
 export const metadata: Metadata = {
   title: "School operations",
@@ -65,9 +66,12 @@ export default async function Page() {
       <p className="text-xs font-bold tracking-[.2em] text-red-600 uppercase">
         SchoolBase operations
       </p>
-      <h1 className="mt-2 text-3xl font-bold">School overview</h1>
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-3xl font-bold">School overview</h1>
+        <StatusRefresh />
+      </div>
       <p className="mt-2 max-w-2xl text-slate-600">
-        Availability, staff activity, deployment and capacity are separate signals.
+        Availability, staff activity, reported image and capacity are separate signals.
         Missing or old readings remain unavailable.
       </p>
       <section className="mt-8 grid gap-4 md:grid-cols-3">
@@ -218,8 +222,10 @@ export default async function Page() {
                   </strong>
                 </p>
                 <p>
-                  Last deployment:{" "}
-                  <strong>{status?.deployment.state || "unknown"}</strong>
+                  School image:{" "}
+                  <strong className="break-all">
+                    {status?.runtime_image?.image_ref || "Unavailable"}
+                  </strong>
                 </p>
               </div>
             </Link>

@@ -32,6 +32,13 @@ export type SchoolStatus = {
     source_reference: string | null
     observed_at: string | null
   }
+  runtime_image: {
+    image_ref: string | null
+    reported_at: string | null
+    received_at: string | null
+    collection_status: "current" | "stale" | "unknown"
+    source: string | null
+  }
   staff_activity: {
     last_staff_login_at: string | null
     last_received_at: string | null
