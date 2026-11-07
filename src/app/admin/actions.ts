@@ -163,3 +163,48 @@ export async function createSchool(
   revalidatePath("/admin")
   redirect(`/admin/schools/${school.slug}`)
 }
+
+export async function updateStorageAllocation(
+  _state: string | null,
+  form: FormData
+): Promise<string | null> {
+  const slug = String(form.get("slug") || "")
+  const expected_version = Number(form.get("expected_version"))
+  const raw = String(form.get("allocation_gib") || "").trim()
+  const reason = String(form.get("reason") || "").trim()
+  if (
+    !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) ||
+    !Number.isSafeInteger(expected_version) ||
+    expected_version < 1
+  )
+    return "Reload the school page and try again."
+  if (!reason || reason.length > 1000) return "Enter a reason for the allocation change."
+  let object_storage_allocation_bytes: number | null = null
+  if (raw) {
+    if (!/^\d+(?:\.\d{1,10})?$/.test(raw))
+      return "Enter an amount in GiB with up to ten decimal places."
+    object_storage_allocation_bytes = Math.round(Number(raw) * 1024 ** 3)
+    if (
+      !Number.isSafeInteger(object_storage_allocation_bytes) ||
+      object_storage_allocation_bytes <= 0
+    )
+      return "Enter a positive storage allocation."
+  }
+  try {
+    await platformRequest(`/schools/${slug}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ object_storage_allocation_bytes, expected_version, reason }),
+    })
+  } catch (error) {
+    if (error instanceof PlatformRequestError && error.status === 409)
+      return "School settings changed. Reload before editing the allocation."
+    if (error instanceof PlatformRequestError && error.status === 403)
+      return "Only a Platform administrator can change storage allocation."
+    if (error instanceof PlatformRequestError && error.status === 400)
+      return "Check the allocation and reason, then try again."
+    return "The allocation could not be saved. Try again."
+  }
+  revalidatePath(`/admin/schools/${slug}`)
+  redirect(`/admin/schools/${slug}`)
+}

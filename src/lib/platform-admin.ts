@@ -15,6 +15,8 @@ export type School = {
   display_name: string
   lifecycle_state: string
   image_tag: string | null
+  object_storage_allocation_bytes: string | null
+  version: number
 }
 export type Signal = {
   status: string
@@ -152,22 +154,18 @@ export function formatTime(value: string | null | undefined) {
       })
 }
 
+export function formatBytes(value: number) {
+  const unit =
+    value >= 1024 ** 3 ? "GiB" : value >= 1024 ** 2 ? "MiB" : value >= 1024 ? "KiB" : "B"
+  const divisor =
+    unit === "GiB" ? 1024 ** 3 : unit === "MiB" ? 1024 ** 2 : unit === "KiB" ? 1024 : 1
+  return `${(value / divisor).toLocaleString("en-NG", { maximumFractionDigits: 2 })} ${unit}`
+}
+
 export function formatMetric(metric: Metric) {
   if (metric.value === null || metric.collection_status !== "current")
     return "Unavailable"
-  if (metric.metric.endsWith("_bytes")) {
-    const unit =
-      metric.value >= 1024 ** 3
-        ? "GiB"
-        : metric.value >= 1024 ** 2
-          ? "MiB"
-          : metric.value >= 1024
-            ? "KiB"
-            : "B"
-    const divisor =
-      unit === "GiB" ? 1024 ** 3 : unit === "MiB" ? 1024 ** 2 : unit === "KiB" ? 1024 : 1
-    return `${(metric.value / divisor).toLocaleString("en-NG", { maximumFractionDigits: 2 })} ${unit}`
-  }
+  if (metric.metric.endsWith("_bytes")) return formatBytes(metric.value)
   if (metric.metric.includes("percent")) return `${metric.value.toFixed(1)}%`
   if (metric.metric.endsWith("_ms")) return `${metric.value.toFixed(0)} ms`
   return metric.value.toLocaleString("en-NG")
