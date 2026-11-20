@@ -49,6 +49,16 @@ export type SchoolStatus = {
     collection_status: "current" | "stale" | "unknown"
     source: string | null
   }
+  api_usage?: {
+    window_start: string | null
+    window_end: string | null
+    request_count: number | null
+    error_5xx_count: number | null
+    p95_latency_ms: number | null
+    received_at: string | null
+    collection_status: "current" | "stale" | "unknown"
+    source: string | null
+  }
   staff_activity: {
     last_staff_login_at: string | null
     last_received_at: string | null

@@ -116,6 +116,40 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           every five minutes.
         </span>
       </p>
+      <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-5">
+        <h2 className="text-xl font-bold">School API activity</h2>
+        <p className="mt-1 text-sm text-slate-600">
+          Completed API requests over a five-minute window. Health checks and preflight
+          requests are excluded.
+        </p>
+        <div className="mt-4 grid gap-4 sm:grid-cols-3">
+          <div>
+            <p className="text-sm text-slate-500">Requests</p>
+            <strong className="text-xl">
+              {status.api_usage?.request_count ?? "Unavailable"}
+            </strong>
+          </div>
+          <div>
+            <p className="text-sm text-slate-500">HTTP 5xx</p>
+            <strong className="text-xl">
+              {status.api_usage?.error_5xx_count ?? "Unavailable"}
+            </strong>
+          </div>
+          <div>
+            <p className="text-sm text-slate-500">p95 response time</p>
+            <strong className="text-xl">
+              {status.api_usage?.p95_latency_ms == null
+                ? "Unavailable"
+                : `${status.api_usage.p95_latency_ms} ms or less`}
+            </strong>
+          </div>
+        </div>
+        <p className="mt-3 text-xs text-slate-500">
+          Source: {status.api_usage?.source || "Unavailable"} · Window ended:{" "}
+          {formatTime(status.api_usage?.window_end)} ·{" "}
+          {status.api_usage?.collection_status ?? "unknown"}
+        </p>
+      </section>
       <section className="mt-10">
         <h2 className="text-xl font-bold">Capacity by source</h2>
         <p className="mt-1 text-sm text-slate-600">
