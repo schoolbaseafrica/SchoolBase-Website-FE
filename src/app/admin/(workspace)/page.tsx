@@ -264,7 +264,7 @@ export default async function Page() {
             >
               <h3 className="font-bold">{source.resource_ref}</h3>
               <p className="mt-1 text-xs text-slate-500">
-                Host collector · {source.revoked_at ? "revoked" : "configured"}
+                Shared capacity source · {source.revoked_at ? "revoked" : "configured"}
               </p>
               <div className="mt-4 space-y-2">
                 {source.metrics.map((metric) => (
