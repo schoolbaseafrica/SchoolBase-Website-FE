@@ -61,6 +61,7 @@ export type SchoolStatus = {
   }
   staff_activity: {
     last_staff_login_at: string | null
+    last_staff_action_at: string | null
     last_received_at: string | null
     collection_status: string
   }

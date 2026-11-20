@@ -221,7 +221,7 @@ export default async function Page() {
                   Frontend: <strong>{status?.frontend.status || "unavailable"}</strong>
                 </p>
                 <p>
-                  Last staff login:{" "}
+                  Last staff sign-in:{" "}
                   <strong>
                     {status?.staff_activity.collection_status === "current"
                       ? status.staff_activity.last_staff_login_at

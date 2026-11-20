@@ -64,7 +64,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         </div>
         <StatusRefresh />
       </div>
-      <section className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <section className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         {(
           [
             [
@@ -80,11 +80,21 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
               status.backend.source,
             ],
             [
-              "Staff login",
+              "Last staff sign-in",
               status.staff_activity.collection_status === "current"
                 ? status.staff_activity.last_staff_login_at
                   ? formatTime(status.staff_activity.last_staff_login_at)
                   : "No staff login recorded"
+                : "Unavailable",
+              status.staff_activity.last_received_at,
+              "school report",
+            ],
+            [
+              "Last staff action",
+              status.staff_activity.collection_status === "current"
+                ? status.staff_activity.last_staff_action_at
+                  ? formatTime(status.staff_activity.last_staff_action_at)
+                  : "No action recorded"
                 : "Unavailable",
               status.staff_activity.last_received_at,
               "school report",
@@ -108,6 +118,10 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           </div>
         ))}
       </section>
+      <p className="mt-2 text-xs text-slate-500">
+        A staff action is a successful Admin or Teacher create, edit, or delete request.
+        Viewing pages does not count.
+      </p>
       <p className="mt-4 rounded-2xl border border-slate-200 bg-white p-5 text-sm">
         <span className="font-semibold">Image reported by school:</span>{" "}
         <span className="break-all">{runtimeImage.image_ref || "Unavailable"}</span>
