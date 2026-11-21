@@ -86,7 +86,17 @@ export default async function Page() {
       </p>
       <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-3xl font-bold">School overview</h1>
-        <StatusRefresh />
+        <div className="flex items-center gap-3">
+          {operator.role === "platform_admin" && (
+            <Link
+              href="/admin/operators"
+              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-white"
+            >
+              Platform users
+            </Link>
+          )}
+          <StatusRefresh />
+        </div>
       </div>
       <p className="mt-2 max-w-2xl text-slate-600">
         Availability, staff activity, reported image and capacity are separate signals.
@@ -206,7 +216,7 @@ export default async function Page() {
           Alerts appear here by default.{" "}
           {emailPreference.email_available
             ? "Email is optional and uses your operator email address."
-            : "Email becomes available when Platform SMTP is configured."}
+            : "You can save an email preference now. Delivery starts after MAIL_HOST and MAIL_FROM_ADDRESS are configured on the Platform API in Coolify and alerts are enabled."}
         </p>
         <div className="mt-4 space-y-2">
           {notifications.slice(0, 20).map((item) => (

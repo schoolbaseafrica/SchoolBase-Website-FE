@@ -128,6 +128,41 @@ export async function setAlertEmailPreference(
   }
 }
 
+export async function createPlatformOperator(
+  _state: string | null,
+  form: FormData
+): Promise<string | null> {
+  const email = String(form.get("email") || "")
+    .trim()
+    .toLowerCase()
+  const display_name = String(form.get("display_name") || "").trim()
+  const password = String(form.get("password") || "")
+  const role = String(form.get("role") || "")
+  const reason = String(form.get("reason") || "").trim()
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254)
+    return "Enter a valid email address."
+  if (!display_name || display_name.length > 200) return "Enter a display name."
+  if (password.length < 12) return "Use a password of at least 12 characters."
+  if (!["viewer", "operator", "platform_admin"].includes(role))
+    return "Choose a valid role."
+  if (!reason || reason.length > 1000) return "Enter a reason for adding this user."
+  try {
+    await platformRequest("/operators", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email, display_name, password, role, reason }),
+    })
+    revalidatePath("/admin/operators")
+    return "User added. They can now sign in with the password you set."
+  } catch (error) {
+    if (error instanceof PlatformRequestError && error.status === 409)
+      return "An operator with this email already exists."
+    if (error instanceof PlatformRequestError && error.status === 403)
+      return "Only a Platform admin can add users."
+    return "The user could not be added. Check the details and try again."
+  }
+}
+
 export async function createSchool(
   _state: string | null,
   form: FormData

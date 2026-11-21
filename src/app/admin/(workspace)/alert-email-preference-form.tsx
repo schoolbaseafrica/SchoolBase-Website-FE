@@ -14,11 +14,14 @@ export function AlertEmailPreferenceForm({
   return (
     <form action={action} className="flex flex-wrap items-center gap-2 text-sm">
       <label htmlFor="alert-email-preference">Email alerts</label>
+      {!available && (
+        <span className="text-xs text-amber-700">Delivery pending setup</span>
+      )}
       <select
         id="alert-email-preference"
         name="preference"
         defaultValue={preference}
-        disabled={!available || pending}
+        disabled={pending}
         className="rounded-lg border border-slate-300 bg-white px-3 py-2"
       >
         <option value="none">Off</option>
@@ -26,7 +29,7 @@ export function AlertEmailPreferenceForm({
         <option value="all">All alerts</option>
       </select>
       <button
-        disabled={!available || pending}
+        disabled={pending}
         className="rounded-full border border-slate-300 px-4 py-2 font-semibold hover:bg-slate-50 disabled:opacity-50"
       >
         {pending ? "Saving…" : "Save"}
