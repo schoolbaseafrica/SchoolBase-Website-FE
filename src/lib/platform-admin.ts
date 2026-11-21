@@ -102,6 +102,22 @@ export type CapacityAlert = {
   updated_at: string
   acknowledged_at: string | null
 }
+export type AlertNotification = {
+  id: string
+  kind: "opened" | "escalated" | "resolved"
+  severity: "warning" | "critical"
+  created_at: string
+  alert_id: string
+  condition: string
+  scope: "school" | "shared"
+  resource_ref: string
+  school_name: string | null
+  read_at: string | null
+}
+export type AlertEmailPreference = {
+  alert_email_preference: "none" | "critical" | "all"
+  email_available: boolean
+}
 export type MetricHistory = {
   scope: "school" | "shared"
   window_hours: number

@@ -2,6 +2,8 @@ import Link from "next/link"
 import type { Metadata } from "next"
 import {
   CapacityAlert,
+  AlertNotification,
+  AlertEmailPreference,
   Metrics,
   School,
   SchoolStatus,
@@ -11,6 +13,8 @@ import {
 } from "@/lib/platform-admin"
 import { AcknowledgeForm } from "./acknowledge-form"
 import { StatusRefresh } from "./status-refresh"
+import { markAlertNotificationRead } from "../actions"
+import { AlertEmailPreferenceForm } from "./alert-email-preference-form"
 
 export const metadata: Metadata = {
   title: "School operations",
@@ -38,13 +42,18 @@ export default async function Page() {
   let schools: School[]
   let shared: Metrics
   let alerts: CapacityAlert[]
+  let notifications: AlertNotification[]
+  let emailPreference: AlertEmailPreference
   try {
-    ;[operator, schools, shared, alerts] = await Promise.all([
-      platformRequest<{ role: string }>("/operators/me"),
-      platformRequest<School[]>("/schools"),
-      platformRequest<Metrics>("/metrics/shared"),
-      platformRequest<CapacityAlert[]>("/alerts"),
-    ])
+    ;[operator, schools, shared, alerts, notifications, emailPreference] =
+      await Promise.all([
+        platformRequest<{ role: string }>("/operators/me"),
+        platformRequest<School[]>("/schools"),
+        platformRequest<Metrics>("/metrics/shared"),
+        platformRequest<CapacityAlert[]>("/alerts"),
+        platformRequest<AlertNotification[]>("/alerts/notifications"),
+        platformRequest<AlertEmailPreference>("/alerts/email-preference"),
+      ])
   } catch {
     return (
       <section>
@@ -176,6 +185,57 @@ export default async function Page() {
             <p className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-600">
               No active alerts. Unconnected sources remain unavailable rather than
               healthy.
+            </p>
+          )}
+        </div>
+      </section>
+      <section className="mt-10" aria-labelledby="platform-notifications-heading">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 id="platform-notifications-heading" className="text-xl font-bold">
+            Notifications
+            <span className="ml-2 rounded-full bg-red-50 px-2.5 py-1 text-xs text-red-700">
+              {notifications.filter((item) => !item.read_at).length} unread
+            </span>
+          </h2>
+          <AlertEmailPreferenceForm
+            preference={emailPreference.alert_email_preference}
+            available={emailPreference.email_available}
+          />
+        </div>
+        <p className="mt-1 text-sm text-slate-600">
+          Alerts appear here by default.{" "}
+          {emailPreference.email_available
+            ? "Email is optional and uses your operator email address."
+            : "Email becomes available when Platform SMTP is configured."}
+        </p>
+        <div className="mt-4 space-y-2">
+          {notifications.slice(0, 20).map((item) => (
+            <div
+              key={item.id}
+              className={`flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4 ${item.read_at ? "border-slate-200 bg-white" : "border-red-200 bg-red-50"}`}
+            >
+              <div>
+                <p className="font-semibold capitalize">
+                  {item.kind} · {item.severity} · {item.condition.replaceAll("_", " ")}
+                </p>
+                <p className="text-sm text-slate-600">
+                  {item.school_name || "Shared infrastructure"} · {item.resource_ref} ·{" "}
+                  {formatTime(item.created_at)}
+                </p>
+              </div>
+              {!item.read_at && (
+                <form action={markAlertNotificationRead}>
+                  <input type="hidden" name="id" value={item.id} />
+                  <button className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold">
+                    Mark read
+                  </button>
+                </form>
+              )}
+            </div>
+          ))}
+          {!notifications.length && (
+            <p className="rounded-xl border border-slate-200 bg-white p-5 text-sm text-slate-600">
+              No alert notifications yet.
             </p>
           )}
         </div>

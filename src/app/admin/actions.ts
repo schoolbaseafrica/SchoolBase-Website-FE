@@ -97,6 +97,37 @@ export async function acknowledgeAlert(
   return null
 }
 
+export async function markAlertNotificationRead(form: FormData) {
+  const id = String(form.get("id") || "")
+  if (!/^\d+$/.test(id)) return
+  try {
+    await platformRequest(`/alerts/notifications/${id}/read`, { method: "POST" })
+    revalidatePath("/admin")
+  } catch {
+    /* The notification remains unread if the request fails. */
+  }
+}
+
+export async function setAlertEmailPreference(
+  _state: string | null,
+  form: FormData
+): Promise<string | null> {
+  const preference = String(form.get("preference") || "")
+  if (!["none", "critical", "all"].includes(preference))
+    return "Choose a valid email preference."
+  try {
+    await platformRequest("/alerts/email-preference", {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ preference }),
+    })
+    revalidatePath("/admin")
+    return "Email preference saved."
+  } catch {
+    return "Email preference could not be saved. Reload and try again."
+  }
+}
+
 export async function createSchool(
   _state: string | null,
   form: FormData
