@@ -79,6 +79,7 @@ export default async function Page() {
       }
     })
   )
+  const activeSharedSources = shared.sources.filter((source) => !source.revoked_at)
   return (
     <div>
       <p className="text-xs font-bold tracking-[.2em] text-red-600 uppercase">
@@ -121,13 +122,13 @@ export default async function Page() {
           <p className="text-sm text-slate-500">Shared capacity sources</p>
           <p className="mt-2 text-3xl font-bold">
             {
-              shared.sources.filter((source) =>
+              activeSharedSources.filter((source) =>
                 source.metrics.some((metric) => metric.collection_status === "current")
               ).length
             }
             <span className="text-base font-normal text-slate-500">
               {" "}
-              / {shared.sources.length}
+              / {activeSharedSources.length}
             </span>
           </p>
         </div>
@@ -327,7 +328,7 @@ export default async function Page() {
           These readings belong to shared infrastructure and are not assigned to a school.
         </p>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
-          {shared.sources.map((source) => (
+          {activeSharedSources.map((source) => (
             <div
               key={source.id}
               className="rounded-2xl border border-slate-200 bg-white p-5"
@@ -349,7 +350,7 @@ export default async function Page() {
               </p>
             </div>
           ))}
-          {!shared.sources.length && (
+          {!activeSharedSources.length && (
             <p className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-600">
               No shared capacity source connected. Usage is unavailable.
             </p>
