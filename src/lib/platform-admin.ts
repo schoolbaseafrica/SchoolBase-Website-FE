@@ -162,6 +162,63 @@ export type SchoolEntitlements = {
     after_value: { offering: string; enabled: boolean }
   }>
 }
+export type BillingInvoice = {
+  id: string
+  number: string
+  school_slug: string
+  school_name: string
+  period_label: string
+  total_kobo: number
+  vat_kobo: number
+  charges_kobo: number
+  credits_kobo: number
+  paid_kobo: number
+  outstanding_kobo: number
+  due_on: string
+  issued_at: string
+  void_reason: string | null
+  status: "open" | "overdue" | "on_hold" | "paid" | "void"
+}
+export type SchoolBilling = {
+  today: string
+  contract: {
+    id: string
+    cadence: "term" | "year"
+    amount_kobo: number
+    starts_on: string
+  } | null
+  contracts: Array<{
+    id: string
+    cadence: "term" | "year"
+    amount_kobo: number
+    starts_on: string
+    ended_on: string | null
+    reason: string
+    created_by: string | null
+  }>
+  periods: Array<{
+    id: string
+    label: string
+    starts_on: string
+    ends_on: string
+    free: boolean
+    invoice_number: string | null
+  }>
+  invoices: BillingInvoice[]
+  on_hold: boolean
+}
+export type BillingInvoicePage = {
+  items: BillingInvoice[]
+  total: number
+  counts: Record<BillingInvoice["status"], number>
+  page_size: number
+}
+
+/** Naira from kobo: 15000000 -> "₦150,000.00". */
+export function naira(kobo: number) {
+  return `₦${(kobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+}
+
 export type AlertEmailPreference = {
   alert_email_preference: "none" | "critical" | "all"
   email_available: boolean

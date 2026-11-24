@@ -331,3 +331,108 @@ export async function setSchoolEntitlement(
   revalidatePath(`/admin/schools/${slug}`)
   return null
 }
+
+/** Naira typed by an operator (e.g. "150,000" or "150000.50") to whole kobo. */
+function koboFrom(value: FormDataEntryValue | null): number | null {
+  const text = String(value ?? "").replace(/[,\s₦]/g, "")
+  if (!/^\d+(\.\d{1,2})?$/.test(text)) return null
+  const kobo = Math.round(Number(text) * 100)
+  return Number.isSafeInteger(kobo) ? kobo : null
+}
+
+async function billingCall(
+  path: string,
+  body: unknown,
+  slug: string
+): Promise<string | null> {
+  try {
+    await platformRequest(path, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body),
+    })
+  } catch (error) {
+    return error instanceof PlatformRequestError && error.status === 400
+      ? "The platform refused this. Check the values and try again."
+      : error instanceof PlatformRequestError && error.status === 403
+        ? "Only a platform admin can change billing."
+        : "The change could not be saved. Reload and try again."
+  }
+  revalidatePath(`/admin/schools/${slug}`)
+  revalidatePath("/admin/billing")
+  return null
+}
+
+const slugOf = (form: FormData) => {
+  const slug = String(form.get("slug") || "")
+  return /^[a-z0-9-]{1,80}$/.test(slug) ? slug : null
+}
+
+export async function setBillingContract(_state: string | null, form: FormData) {
+  const slug = slugOf(form)
+  const amount = koboFrom(form.get("amount"))
+  const cadence = String(form.get("cadence") || "")
+  const startsOn = String(form.get("starts_on") || "")
+  const reason = String(form.get("reason") || "").trim()
+  if (
+    !slug ||
+    amount === null ||
+    !["term", "year"].includes(cadence) ||
+    !startsOn ||
+    !reason
+  )
+    return "Fill in the price, period, start date and reason."
+  return billingCall(
+    `/schools/${slug}/billing/contract`,
+    { cadence, amount_kobo: amount, starts_on: startsOn, reason },
+    slug
+  )
+}
+
+export async function addBillingPeriod(_state: string | null, form: FormData) {
+  const slug = slugOf(form)
+  const label = String(form.get("label") || "").trim()
+  const startsOn = String(form.get("starts_on") || "")
+  const endsOn = String(form.get("ends_on") || "")
+  if (!slug || !label || !startsOn || !endsOn) return "Fill in the name and both dates."
+  return billingCall(
+    `/schools/${slug}/billing/periods`,
+    { label, starts_on: startsOn, ends_on: endsOn, free: form.get("free") === "on" },
+    slug
+  )
+}
+
+export async function issueDueInvoices(_state: string | null, form: FormData) {
+  const slug = slugOf(form)
+  if (!slug) return "Reload the page and try again."
+  return billingCall(`/schools/${slug}/billing/issue`, {}, slug)
+}
+
+export async function adjustInvoice(_state: string | null, form: FormData) {
+  const slug = slugOf(form)
+  const id = String(form.get("id") || "")
+  const kind = String(form.get("kind") || "")
+  const amount = koboFrom(form.get("amount"))
+  const reason = String(form.get("reason") || "").trim()
+  if (
+    !slug ||
+    !/^[0-9a-f-]{36}$/i.test(id) ||
+    !["credit", "charge"].includes(kind) ||
+    !amount ||
+    !reason
+  )
+    return "Fill in the amount and reason."
+  return billingCall(
+    `/invoices/${id}/adjustments`,
+    { kind, amount_kobo: amount, reason },
+    slug
+  )
+}
+
+export async function voidInvoice(_state: string | null, form: FormData) {
+  const slug = slugOf(form)
+  const id = String(form.get("id") || "")
+  const reason = String(form.get("reason") || "").trim()
+  if (!slug || !/^[0-9a-f-]{36}$/i.test(id) || !reason) return "Give a reason."
+  return billingCall(`/invoices/${id}/void`, { reason }, slug)
+}

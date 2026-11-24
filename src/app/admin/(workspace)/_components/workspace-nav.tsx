@@ -9,6 +9,7 @@ const LINKS = [
   { href: "/admin/alerts", label: "Alerts" },
   { href: "/admin/notifications", label: "Notifications" },
   { href: "/admin/infrastructure", label: "Infrastructure" },
+  { href: "/admin/billing", label: "Billing" },
 ]
 
 /** The operator console's sections; Platform users only for platform admins. */
