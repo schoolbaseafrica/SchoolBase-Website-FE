@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { formatMetric, formatTime, Metrics, platformRequest } from "@/lib/platform-admin"
+import { RevokeSourceForm } from "./revoke-source-form"
 
 export const metadata: Metadata = {
   title: "Infrastructure",
@@ -9,8 +10,12 @@ export const metadata: Metadata = {
 /** Shared capacity sources: readings that belong to no single school. */
 export default async function Page() {
   let shared: Metrics
+  let operator: { role: string }
   try {
-    shared = await platformRequest<Metrics>("/metrics/shared")
+    ;[shared, operator] = await Promise.all([
+      platformRequest<Metrics>("/metrics/shared"),
+      platformRequest<{ role: string }>("/operators/me"),
+    ])
   } catch {
     return (
       <section>
@@ -53,6 +58,9 @@ export default async function Page() {
             <p className="mt-3 text-xs text-slate-500">
               Last sample: {formatTime(source.metrics[0]?.observed_at)}
             </p>
+            {operator.role === "platform_admin" && (
+              <RevokeSourceForm id={source.id} name={source.resource_ref} />
+            )}
           </div>
         ))}
         {!sources.length && (

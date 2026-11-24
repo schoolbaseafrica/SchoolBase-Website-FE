@@ -7,7 +7,8 @@ import {
   platformRequest,
 } from "@/lib/platform-admin"
 import { AlertEmailPreferenceForm } from "../alert-email-preference-form"
-import { NotificationRow } from "../_components/notification-row"
+import { NotificationList } from "../_components/notification-row"
+import { markAllAlertNotificationsRead } from "../../actions"
 import { Pager } from "../_components/pager"
 import { pageNumber, single } from "../_components/status"
 
@@ -18,14 +19,19 @@ export const metadata: Metadata = {
 
 const PAGE_SIZE = 25
 
-/** Alert notification history and this operator's email preference. */
+/**
+ * Unread alerts by default, full history on request, and this operator's
+ * email preference. Each alert is one compact line.
+ */
 export default async function Page({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const query = await searchParams
-  const unread = single(query.unread) === "true" ? "true" : undefined
+  // Unread is the default view; history is one click away.
+  const history = single(query.view) === "all"
+  const unread = history ? undefined : "true"
   const page = pageNumber(query.page)
   let items: AlertNotification[]
   let overview: Overview
@@ -80,21 +86,29 @@ export default async function Page({
         </p>
       </section>
 
-      <div className="mt-6 flex gap-2">
-        <Link href="/admin/notifications" className={tab(!unread)}>
-          All
-        </Link>
-        <Link href="/admin/notifications?unread=true" className={tab(Boolean(unread))}>
-          Unread
-        </Link>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex gap-2">
+          <Link href="/admin/notifications" className={tab(!history)}>
+            Unread
+          </Link>
+          <Link href="/admin/notifications?view=all" className={tab(history)}>
+            All history
+          </Link>
+        </div>
+        {overview.notifications.unread > 0 && (
+          <form action={markAllAlertNotificationsRead}>
+            <button className="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold">
+              Mark all read
+            </button>
+          </form>
+        )}
       </div>
-      <div className="mt-4 space-y-2">
-        {items.map((item) => (
-          <NotificationRow key={item.id} item={item} />
-        ))}
-        {!items.length && (
+      <div className="mt-4">
+        {items.length > 0 ? (
+          <NotificationList items={items} />
+        ) : (
           <p className="rounded-xl border border-slate-200 bg-white p-5 text-sm text-slate-600">
-            {unread ? "Nothing unread." : "No alert notifications yet."}
+            {history ? "No alert notifications yet." : "Nothing unread."}
           </p>
         )}
       </div>
@@ -102,7 +116,7 @@ export default async function Page({
         path="/admin/notifications"
         page={page}
         hasNext={items.length === PAGE_SIZE}
-        query={{ unread }}
+        query={{ view: history ? "all" : undefined }}
       />
     </div>
   )

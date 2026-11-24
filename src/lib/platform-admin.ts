@@ -85,6 +85,7 @@ export type CapacityAlert = {
   scope: "school" | "shared"
   school_slug: string | null
   school_name: string | null
+  source: string
   resource_ref: string
   condition: string
   severity: "warning" | "critical"
@@ -102,17 +103,21 @@ export type CapacityAlert = {
   updated_at: string
   acknowledged_at: string | null
 }
+/** One alert's notifications, as a single entry. */
 export type AlertNotification = {
-  id: string
-  kind: "opened" | "escalated" | "resolved"
-  severity: "warning" | "critical"
-  created_at: string
   alert_id: string
   condition: string
+  severity: "warning" | "critical"
   scope: "school" | "shared"
+  source: string
   resource_ref: string
+  school_slug: string | null
   school_name: string | null
-  read_at: string | null
+  opened_at: string
+  resolved_at: string | null
+  latest_kind: "opened" | "escalated" | "resolved"
+  latest_at: string
+  unread: boolean
 }
 export type Overview = {
   schools: { total: number; available: number; unavailable: number; unknown: number }

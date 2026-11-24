@@ -97,15 +97,47 @@ export async function acknowledgeAlert(
   return null
 }
 
+/** Mark one alert's notifications read (opening, escalation, resolution). */
 export async function markAlertNotificationRead(form: FormData) {
   const id = String(form.get("id") || "")
-  if (!/^\d+$/.test(id)) return
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return
   try {
-    await platformRequest(`/alerts/notifications/${id}/read`, { method: "POST" })
+    await platformRequest(`/alerts/${id}/read`, { method: "POST" })
     revalidatePath("/admin", "layout")
   } catch {
     /* The notification remains unread if the request fails. */
   }
+}
+
+export async function markAllAlertNotificationsRead() {
+  try {
+    await platformRequest("/alerts/notifications/read-all", { method: "POST" })
+    revalidatePath("/admin", "layout")
+  } catch {
+    /* Nothing changes if the request fails. */
+  }
+}
+
+/** Retire a capacity source (for example a test one); platform admins only. */
+export async function revokeMetricSource(
+  _state: string | null,
+  form: FormData
+): Promise<string | null> {
+  const id = String(form.get("id") || "")
+  const reason = String(form.get("reason") || "").trim()
+  if (!/^[0-9a-f-]{36}$/i.test(id) || !reason || reason.length > 1000)
+    return "Enter a reason of up to 1,000 characters."
+  try {
+    await platformRequest(`/metric-collectors/${id}/revoke`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ reason }),
+    })
+  } catch {
+    return "The source could not be revoked. Only a platform admin can revoke one."
+  }
+  revalidatePath("/admin", "layout")
+  return null
 }
 
 export async function setAlertEmailPreference(

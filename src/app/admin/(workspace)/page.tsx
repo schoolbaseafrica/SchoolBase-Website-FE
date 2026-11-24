@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { Metrics, Overview, platformRequest } from "@/lib/platform-admin"
 import { StatusRefresh } from "./status-refresh"
 import { AlertCard } from "./_components/alert-card"
-import { NotificationRow } from "./_components/notification-row"
+import { NotificationList } from "./_components/notification-row"
 
 export const metadata: Metadata = {
   title: "School operations",
@@ -151,10 +151,10 @@ export default async function Page() {
             All notifications →
           </Link>
         </div>
-        <div className="mt-4 space-y-2">
-          {notifications.latest.map((item) => (
-            <NotificationRow key={item.id} item={item} />
-          ))}
+        <div className="mt-4">
+          {notifications.latest.length > 0 && (
+            <NotificationList items={notifications.latest} />
+          )}
           {!notifications.latest.length && (
             <p className="rounded-xl border border-slate-200 bg-white p-5 text-sm text-slate-600">
               No alert notifications yet.
