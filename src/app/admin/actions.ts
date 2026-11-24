@@ -306,3 +306,28 @@ export async function updateStorageAllocation(
   revalidatePath(`/admin/schools/${slug}`)
   redirect(`/admin/schools/${slug}`)
 }
+
+/** Switch one optional feature on or off for one school, with a reason. */
+export async function setSchoolEntitlement(
+  _state: string | null,
+  form: FormData
+): Promise<string | null> {
+  const slug = String(form.get("slug") || "")
+  const offering = String(form.get("offering") || "")
+  const enabled = form.get("enabled") === "true"
+  const reason = String(form.get("reason") || "").trim()
+  if (!/^[a-z0-9-]{1,80}$/.test(slug) || !/^[a-z_]{2,40}$/.test(offering))
+    return "Reload the page and try again."
+  if (!reason || reason.length > 1000) return "Enter a reason of up to 1,000 characters."
+  try {
+    await platformRequest(`/schools/${slug}/entitlements/${offering}`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ enabled, reason }),
+    })
+  } catch {
+    return "The change could not be saved. Reload and try again."
+  }
+  revalidatePath(`/admin/schools/${slug}`)
+  return null
+}

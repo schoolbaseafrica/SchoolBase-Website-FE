@@ -11,6 +11,7 @@ import {
 } from "@/lib/platform-admin"
 import { StatusRefresh } from "../../status-refresh"
 import { StorageAllocationForm } from "./storage-allocation-form"
+import { FeaturesSection } from "./features-section"
 
 export const metadata: Metadata = {
   title: "School status",
@@ -130,6 +131,10 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           every five minutes.
         </span>
       </p>
+      <FeaturesSection
+        slug={school.slug}
+        canChange={operator.role === "operator" || operator.role === "platform_admin"}
+      />
       <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-5">
         <h2 className="text-xl font-bold">School API activity</h2>
         <p className="mt-1 text-sm text-slate-600">

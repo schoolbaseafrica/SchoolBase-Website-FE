@@ -142,6 +142,26 @@ export type SchoolStatusPage = {
   page: number
   page_size: number
 }
+export type SchoolEntitlements = {
+  last_fetched_at: string | null
+  fetch_current: boolean
+  offerings: Array<{
+    key: string
+    label: string
+    description: string
+    enabled: boolean
+    reason: string | null
+    updated_at: string | null
+    updated_by: string | null
+  }>
+  history: Array<{
+    occurred_at: string
+    reason: string
+    actor: string | null
+    before_value: { offering: string; enabled: boolean }
+    after_value: { offering: string; enabled: boolean }
+  }>
+}
 export type AlertEmailPreference = {
   alert_email_preference: "none" | "critical" | "all"
   email_available: boolean
