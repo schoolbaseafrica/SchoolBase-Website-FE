@@ -35,7 +35,7 @@ export function FeatureSwitch({
       <p className="text-sm text-slate-700">
         {enabled
           ? `Switching ${label} off hides it from this school and refuses its pages. Its records stay and come back if it is switched on again.`
-          : `Switching ${label} on makes it available to this school within about five minutes.`}
+          : `Switching ${label} on makes it available to this school within about two minutes.`}
       </p>
       <label className="sr-only" htmlFor={`reason-${offering}`}>
         Reason

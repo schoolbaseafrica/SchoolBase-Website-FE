@@ -47,7 +47,7 @@ export async function FeaturesSection({
       </div>
       <p className="mt-1 text-sm text-slate-600">
         Standard features are always on. These optional ones reach the school within about
-        five minutes
+        two minutes
         {stale
           ? "; this school has not checked in recently, so it is still using its last list"
           : ""}
