@@ -2,12 +2,14 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { platformRequest } from "@/lib/platform-admin"
 import { signOut } from "../actions"
+import { WorkspaceNav } from "./_components/workspace-nav"
 
 export const dynamic = "force-dynamic"
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
+  let operator: { role: string }
   try {
-    await platformRequest("/operators/me")
+    operator = await platformRequest<{ role: string }>("/operators/me")
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized")
       redirect("/admin/login")
@@ -35,6 +37,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
           </form>
         </div>
       </header>
+      <WorkspaceNav isAdmin={operator.role === "platform_admin"} />
       <main className="mx-auto max-w-7xl px-5 py-8">{children}</main>
     </div>
   )

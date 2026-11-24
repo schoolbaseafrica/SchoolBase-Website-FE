@@ -93,7 +93,7 @@ export async function acknowledgeAlert(
   } catch {
     return "The alert could not be acknowledged. Reload and try again."
   }
-  revalidatePath("/admin")
+  revalidatePath("/admin", "layout")
   return null
 }
 
@@ -102,7 +102,7 @@ export async function markAlertNotificationRead(form: FormData) {
   if (!/^\d+$/.test(id)) return
   try {
     await platformRequest(`/alerts/notifications/${id}/read`, { method: "POST" })
-    revalidatePath("/admin")
+    revalidatePath("/admin", "layout")
   } catch {
     /* The notification remains unread if the request fails. */
   }
@@ -121,7 +121,7 @@ export async function setAlertEmailPreference(
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ preference }),
     })
-    revalidatePath("/admin")
+    revalidatePath("/admin", "layout")
     return "Email preference saved."
   } catch {
     return "Email preference could not be saved. Reload and try again."
@@ -226,7 +226,7 @@ export async function createSchool(
       return "Your session expired. Sign in again."
     return "School registration could not be completed. Try again."
   }
-  revalidatePath("/admin")
+  revalidatePath("/admin", "layout")
   redirect(`/admin/schools/${school.slug}`)
 }
 

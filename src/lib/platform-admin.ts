@@ -114,6 +114,29 @@ export type AlertNotification = {
   school_name: string | null
   read_at: string | null
 }
+export type Overview = {
+  schools: { total: number; available: number; unavailable: number; unknown: number }
+  alerts: { open: number; critical: number; unacknowledged: number; top: CapacityAlert[] }
+  notifications: { unread: number; latest: AlertNotification[] }
+}
+export type SchoolStatusRow = {
+  id: string
+  slug: string
+  display_name: string
+  lifecycle_state: string
+  backend_status: "available" | "unavailable" | "unknown"
+  backend_observed_at: string | null
+  frontend_status: "available" | "unavailable" | "unknown"
+  last_staff_login_at: string | null
+  staff_activity_status: "current" | "stale" | "unknown"
+  image_ref: string | null
+}
+export type SchoolStatusPage = {
+  items: SchoolStatusRow[]
+  total: number
+  page: number
+  page_size: number
+}
 export type AlertEmailPreference = {
   alert_email_preference: "none" | "critical" | "all"
   email_available: boolean
@@ -151,13 +174,18 @@ function origin() {
 
 export async function platformRequest<T>(
   path: string,
-  init: RequestInit = {}
+  init: RequestInit = {},
+  query: Record<string, string | undefined> = {}
 ): Promise<T> {
   if (!/^\/[a-zA-Z0-9/_-]+$/.test(path) || path.includes("//"))
     throw new Error("Invalid platform path")
   const token = (await cookies()).get(platformCookie)?.value
   if (!token) throw new Error("Unauthorized")
-  const response = await fetch(`${origin()}${path}`, {
+  // Filters travel as encoded query values, never as part of the path.
+  const params = new URLSearchParams()
+  for (const [key, value] of Object.entries(query)) if (value) params.set(key, value)
+  const search = params.size ? `?${params}` : ""
+  const response = await fetch(`${origin()}${path}${search}`, {
     ...init,
     headers: { ...init.headers, authorization: `Bearer ${token}` },
     cache: "no-store",
