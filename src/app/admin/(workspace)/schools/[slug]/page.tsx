@@ -7,6 +7,7 @@ import {
   Metrics,
   School,
   SchoolStatus,
+  type Signal,
   platformRequest,
 } from "@/lib/platform-admin"
 import { StatusRefresh } from "../../status-refresh"
@@ -14,6 +15,30 @@ import { StorageAllocationForm } from "./storage-allocation-form"
 import { FeaturesSection } from "./features-section"
 import { BillingSection } from "./billing-section"
 import { ConnectionSection } from "./connection-section"
+import { DetailsForm } from "./details-form"
+
+const PROBLEMS: Record<string, string> = {
+  timeout: "No answer within 5 seconds",
+  network_error: "Could not connect",
+  dns_error: "Address not found (DNS)",
+  unsafe_dns: "Address points to a private network",
+  invalid_url: "Address not allowed",
+  response_too_large: "Unexpected answer",
+}
+
+/** Why a check failed, in words, with the address it checked. */
+function problem(signal: Signal): string | null {
+  if (signal.status === "available" || !signal.source_url) return null
+  const why =
+    signal.error_code === "not_ready"
+      ? signal.http_status === 200
+        ? "Answered, but not as a SchoolBase backend"
+        : `Answered HTTP ${signal.http_status ?? "?"}`
+      : signal.error_code === "http_status"
+        ? `Answered HTTP ${signal.http_status ?? "?"}`
+        : (PROBLEMS[signal.error_code ?? ""] ?? "Check failed")
+  return `${why} at ${signal.source_url}`
+}
 
 export const metadata: Metadata = {
   title: "School status",
@@ -64,8 +89,16 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           <p className="mt-1 text-slate-600">
             {school.slug} · {school.lifecycle_state}
           </p>
+          <p className="mt-1 text-xs break-all text-slate-500">
+            Website: {school.frontend_url} · API: {school.api_url}
+          </p>
         </div>
-        <StatusRefresh />
+        <div className="flex flex-wrap items-center gap-2">
+          {(operator.role === "operator" || operator.role === "platform_admin") && (
+            <DetailsForm key={school.version} school={school} />
+          )}
+          <StatusRefresh />
+        </div>
       </div>
       <section className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         {(
@@ -75,12 +108,14 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
               status.frontend.status,
               status.frontend.observed_at,
               status.frontend.source,
+              problem(status.frontend),
             ],
             [
               "Backend",
               status.backend.status,
               status.backend.observed_at,
               status.backend.source,
+              problem(status.backend),
             ],
             [
               "Last staff sign-in",
@@ -91,6 +126,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                 : "Unavailable",
               status.staff_activity.last_received_at,
               "school report",
+              null,
             ],
             [
               "Last staff action",
@@ -101,15 +137,17 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                 : "Unavailable",
               status.staff_activity.last_received_at,
               "school report",
+              null,
             ],
             [
               "School image report",
               runtimeImage.collection_status === "current" ? "Current" : "Unavailable",
               runtimeImage.received_at,
               runtimeImage.source,
+              null,
             ],
           ] as const
-        ).map(([label, value, time, source]) => (
+        ).map(([label, value, time, source, issue]) => (
           <div key={label} className="rounded-2xl border border-slate-200 bg-white p-5">
             <h2 className="text-sm text-slate-500">{label}</h2>
             <p className="mt-2 text-xl font-bold capitalize">{value}</p>
@@ -118,6 +156,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
               <br />
               Observed: {formatTime(time)}
             </p>
+            {issue && <p className="mt-2 text-xs break-all text-red-700">{issue}</p>}
           </div>
         ))}
       </section>

@@ -594,3 +594,87 @@ export async function revokeSchoolToken(
   revalidatePath(`/admin/schools/${slug}`)
   return null
 }
+
+const LIFECYCLE = ["onboarding", "active", "suspended", "retired"]
+
+function httpsOrigin(value: string): string | null {
+  try {
+    const url = new URL(value)
+    if (
+      url.protocol !== "https:" ||
+      url.pathname !== "/" ||
+      url.search ||
+      url.hash ||
+      url.username ||
+      url.password ||
+      url.port
+    )
+      return null
+    return url.origin.toLowerCase()
+  } catch {
+    return null
+  }
+}
+
+/** Change a school's name, addresses, support email or state. Sends only what changed. */
+export async function updateSchoolDetails(
+  _state: string | null,
+  form: FormData
+): Promise<string | null> {
+  const slug = String(form.get("slug") || "")
+  const version = Number(form.get("version"))
+  const reason = String(form.get("reason") || "").trim()
+  if (!SLUG.test(slug) || !Number.isSafeInteger(version) || version < 1)
+    return "Reload the page and try again."
+  if (!reason || reason.length > 1000) return "Enter a reason of up to 1,000 characters."
+
+  const read = (name: string) => String(form.get(name) ?? "").trim()
+  const was = (name: string) => String(form.get(`was_${name}`) ?? "").trim()
+  const changes: Record<string, string | null> = {}
+
+  const displayName = read("display_name")
+  if (!displayName || displayName.length > 200) return "Enter the school's name."
+  if (displayName !== was("display_name")) changes.display_name = displayName
+
+  for (const [name, label] of [
+    ["frontend_url", "website"],
+    ["api_url", "API"],
+  ] as const) {
+    const origin = httpsOrigin(read(name))
+    if (!origin)
+      return `Enter the ${label} address as https://host, without a path or port.`
+    if (origin !== was(name)) changes[name] = origin
+  }
+  if (
+    (changes.frontend_url ?? was("frontend_url")) === (changes.api_url ?? was("api_url"))
+  )
+    return "The website and API addresses must be different."
+
+  const email = read("support_email").toLowerCase()
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    return "Enter a valid support email, or leave it blank."
+  if (email !== was("support_email")) changes.support_email = email || null
+
+  const lifecycle = read("lifecycle_state")
+  if (!LIFECYCLE.includes(lifecycle)) return "Choose a valid state."
+  if (lifecycle !== was("lifecycle_state")) changes.lifecycle_state = lifecycle
+
+  if (!Object.keys(changes).length) return "Nothing has changed."
+  try {
+    await platformRequest(`/schools/${slug}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ...changes, reason, expected_version: version }),
+    })
+  } catch (error) {
+    if (error instanceof PlatformRequestError && error.status === 409)
+      return error.detail === "School changed; reload before editing"
+        ? "Someone else changed this school. Reload the page and try again."
+        : "Another school already uses that address."
+    return error instanceof PlatformRequestError && error.detail
+      ? error.detail
+      : "The change could not be saved."
+  }
+  revalidatePath("/admin", "layout")
+  return null
+}

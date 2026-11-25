@@ -18,6 +18,9 @@ export type School = {
   slug: string
   display_name: string
   lifecycle_state: string
+  frontend_url: string
+  api_url: string
+  support_email: string | null
   image_tag: string | null
   object_storage_allocation_bytes: string | null
   version: number
@@ -27,6 +30,10 @@ export type Signal = {
   last_result: string | null
   observed_at: string | null
   source: string | null
+  /** The address checked, and why it failed, when it did. */
+  source_url?: string | null
+  http_status?: number | null
+  error_code?: string | null
 }
 export type SchoolStatus = {
   frontend: Signal
