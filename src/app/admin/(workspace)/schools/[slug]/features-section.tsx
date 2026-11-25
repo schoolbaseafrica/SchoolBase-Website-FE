@@ -53,40 +53,52 @@ export async function FeaturesSection({
           : ""}
         .
       </p>
-      <ul className="mt-4 divide-y divide-slate-200 rounded-xl border border-slate-200">
-        {data.offerings.map((offering) => (
-          <li
-            key={offering.key}
-            className="flex flex-wrap items-center justify-between gap-3 p-4"
-          >
-            <div className="min-w-0 flex-1">
-              <p className="font-semibold">
-                {offering.label}
-                <span
-                  className={`ml-2 rounded-full px-2 py-0.5 text-xs font-bold ${offering.enabled ? "bg-emerald-50 text-emerald-800" : "bg-slate-100 text-slate-600"}`}
+      {(data.groups?.length ? data.groups : [null]).map((group) => (
+        <div key={group ?? "all"} className="mt-4">
+          {group && (
+            <h3 className="mb-2 text-sm font-semibold tracking-wide text-slate-500 uppercase">
+              {group}
+            </h3>
+          )}
+          <ul className="divide-y divide-slate-200 rounded-xl border border-slate-200">
+            {data.offerings
+              .filter((offering) => group === null || offering.group === group)
+              .map((offering) => (
+                <li
+                  key={offering.key}
+                  className="flex flex-wrap items-center justify-between gap-3 p-4"
                 >
-                  {offering.enabled ? "On" : "Off"}
-                </span>
-              </p>
-              <p className="text-sm text-slate-600">{offering.description}</p>
-              {offering.updated_at && (
-                <p className="mt-1 text-xs text-slate-500">
-                  {offering.reason} · {offering.updated_by ?? "System"},{" "}
-                  {formatTime(offering.updated_at)}
-                </p>
-              )}
-            </div>
-            {canChange && (
-              <FeatureSwitch
-                slug={slug}
-                offering={offering.key}
-                label={offering.label}
-                enabled={offering.enabled}
-              />
-            )}
-          </li>
-        ))}
-      </ul>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold">
+                      {offering.label}
+                      <span
+                        className={`ml-2 rounded-full px-2 py-0.5 text-xs font-bold ${offering.enabled ? "bg-emerald-50 text-emerald-800" : "bg-slate-100 text-slate-600"}`}
+                      >
+                        {offering.enabled ? "On" : "Off"}
+                      </span>
+                    </p>
+                    <p className="text-sm text-slate-600">{offering.description}</p>
+                    {offering.updated_at && (
+                      <p className="mt-1 text-xs text-slate-500">
+                        {offering.reason} · {offering.updated_by ?? "System"},{" "}
+                        {formatTime(offering.updated_at)}
+                      </p>
+                    )}
+                  </div>
+                  {canChange && (
+                    <FeatureSwitch
+                      key={String(offering.enabled)}
+                      slug={slug}
+                      offering={offering.key}
+                      label={offering.label}
+                      enabled={offering.enabled}
+                    />
+                  )}
+                </li>
+              ))}
+          </ul>
+        </div>
+      ))}
       {data.history.length > 0 && (
         <details className="mt-4">
           <summary className="cursor-pointer text-sm font-semibold text-slate-700">

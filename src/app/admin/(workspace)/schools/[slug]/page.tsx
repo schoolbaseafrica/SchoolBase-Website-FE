@@ -132,7 +132,11 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           every five minutes.
         </span>
       </p>
-      <BillingSection slug={school.slug} isAdmin={operator.role === "platform_admin"} />
+      <BillingSection
+        slug={school.slug}
+        isAdmin={operator.role === "platform_admin"}
+        canChange={operator.role === "operator" || operator.role === "platform_admin"}
+      />
       <FeaturesSection
         slug={school.slug}
         canChange={operator.role === "operator" || operator.role === "platform_admin"}

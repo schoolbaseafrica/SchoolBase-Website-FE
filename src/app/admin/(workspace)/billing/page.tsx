@@ -1,6 +1,12 @@
 import Link from "next/link"
 import type { Metadata } from "next"
-import { BillingInvoicePage, naira, platformRequest } from "@/lib/platform-admin"
+import {
+  BillingInvoicePage,
+  naira,
+  platformRequest,
+  type ScheduleStep,
+} from "@/lib/platform-admin"
+import { ScheduleEditor } from "./schedule-editor"
 import {
   InvoiceStatus,
   INVOICE_STATUSES,
@@ -43,6 +49,16 @@ export default async function Page({
       </section>
     )
   }
+  // The enforcement schedule is shown below the invoices; it is optional to
+  // the page, so a failure to load it does not hide the invoices.
+  const [schedule, me] = await Promise.all([
+    platformRequest<{
+      steps: ScheduleStep[]
+      groups: string[]
+      offerings: Array<{ key: string; label: string; group: string }>
+    }>("/billing/schedule").catch(() => null),
+    platformRequest<{ role: string }>("/operators/me").catch(() => null),
+  ])
   const lastPage = Math.max(1, Math.ceil(result.total / result.page_size))
   const tab = (active: boolean) =>
     `rounded-full px-4 py-2 text-sm font-semibold ${active ? "bg-slate-900 text-white" : "border border-slate-300 bg-white text-slate-700"}`
@@ -118,6 +134,27 @@ export default async function Page({
         query={{ status }}
         label={`Page ${Math.min(page, lastPage)} of ${lastPage}`}
       />
+      {schedule && (
+        <section
+          className="mt-10 rounded-2xl border border-slate-200 bg-white p-5"
+          aria-labelledby="schedule"
+        >
+          <h2 id="schedule" className="text-xl font-bold">
+            Enforcement schedule
+          </h2>
+          <p className="mt-1 max-w-3xl text-sm text-slate-600">
+            For schools in Automatic mode: as an invoice stays unpaid, these features
+            pause. Schools keep signing in, and paying restores everything. Operators can
+            still pause a feature or keep one on for a school, and switch a school to
+            Manual.
+          </p>
+          <ScheduleEditor
+            steps={schedule.steps}
+            catalogue={{ groups: schedule.groups, offerings: schedule.offerings }}
+            canEdit={me?.role === "platform_admin"}
+          />
+        </section>
+      )}
     </div>
   )
 }

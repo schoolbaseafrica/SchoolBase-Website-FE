@@ -1,6 +1,7 @@
 import { naira, platformRequest, SchoolBilling } from "@/lib/platform-admin"
 import { InvoiceStatus } from "../../_components/invoice-status"
 import { ContractForm, InvoiceActions, IssueButton, PeriodForm } from "./billing-forms"
+import { EnforcementSection } from "./enforcement-section"
 
 const date = (value: string) =>
   new Date(`${value}T00:00:00Z`).toLocaleDateString("en-GB", {
@@ -17,9 +18,12 @@ const date = (value: string) =>
 export async function BillingSection({
   slug,
   isAdmin,
+  canChange,
 }: {
   slug: string
   isAdmin: boolean
+  /** Operators and platform admins may pause features for non-payment. */
+  canChange: boolean
 }) {
   let billing: SchoolBilling
   try {
@@ -43,7 +47,7 @@ export async function BillingSection({
         </h2>
         {billing.on_hold && (
           <p className="rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-800">
-            On hold: paid optional features paused until paid
+            Features paused for non-payment
           </p>
         )}
       </div>
@@ -164,6 +168,13 @@ export async function BillingSection({
             </tbody>
           </table>
         </div>
+      )}
+      {billing.enforcement && (
+        <EnforcementSection
+          slug={slug}
+          enforcement={billing.enforcement}
+          canChange={canChange}
+        />
       )}
     </section>
   )

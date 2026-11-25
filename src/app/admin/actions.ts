@@ -332,6 +332,99 @@ export async function setSchoolEntitlement(
   return null
 }
 
+const SLUG = /^[a-z0-9-]{1,80}$/
+const FEATURE = /^[a-z_]{2,40}$/
+
+/** Automatic (the platform schedule) or Manual enforcement for a school. */
+export async function setEnforcementMode(
+  _state: string | null,
+  form: FormData
+): Promise<string | null> {
+  const slug = String(form.get("slug") || "")
+  const mode = String(form.get("mode") || "")
+  const reason = String(form.get("reason") || "").trim()
+  if (!SLUG.test(slug) || (mode !== "automatic" && mode !== "manual"))
+    return "Reload the page and try again."
+  if (!reason || reason.length > 1000) return "Enter a reason of up to 1,000 characters."
+  try {
+    await platformRequest(`/schools/${slug}/billing/enforcement`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ mode, reason }),
+    })
+  } catch (error) {
+    return error instanceof PlatformRequestError && error.detail
+      ? error.detail
+      : "The change could not be saved."
+  }
+  revalidatePath(`/admin/schools/${slug}`)
+  return null
+}
+
+/** Pause a feature, keep it on, or lift the choice, for an overdue school. */
+export async function setEnforcementChoice(
+  _state: string | null,
+  form: FormData
+): Promise<string | null> {
+  const slug = String(form.get("slug") || "")
+  const offering = String(form.get("offering") || "")
+  const choice = String(form.get("choice") || "")
+  const reason = String(form.get("reason") || "").trim()
+  if (
+    !SLUG.test(slug) ||
+    !FEATURE.test(offering) ||
+    !["pause", "keep_on", "lift"].includes(choice)
+  )
+    return "Reload the page and try again."
+  if (!reason || reason.length > 1000) return "Enter a reason of up to 1,000 characters."
+  try {
+    await platformRequest(
+      choice === "lift"
+        ? `/schools/${slug}/billing/enforcement/${offering}/lift`
+        : `/schools/${slug}/billing/enforcement/${offering}`,
+      {
+        method: choice === "lift" ? "POST" : "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(choice === "lift" ? { reason } : { kind: choice, reason }),
+      }
+    )
+  } catch (error) {
+    return error instanceof PlatformRequestError && error.detail
+      ? error.detail
+      : "The change could not be saved."
+  }
+  revalidatePath(`/admin/schools/${slug}`)
+  return null
+}
+
+/** Replace the platform schedule (steps sent as JSON from the editor). */
+export async function saveBillingSchedule(
+  _state: string | null,
+  form: FormData
+): Promise<string | null> {
+  const reason = String(form.get("reason") || "").trim()
+  let steps: unknown
+  try {
+    steps = JSON.parse(String(form.get("steps") || "[]"))
+  } catch {
+    return "Reload the page and try again."
+  }
+  if (!reason || reason.length > 1000) return "Enter a reason of up to 1,000 characters."
+  try {
+    await platformRequest(`/billing/schedule`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ steps, reason }),
+    })
+  } catch (error) {
+    return error instanceof PlatformRequestError && error.detail
+      ? error.detail
+      : "The schedule could not be saved."
+  }
+  revalidatePath(`/admin/billing`)
+  return "saved"
+}
+
 /** Naira typed by an operator (e.g. "150,000" or "150000.50") to whole kobo. */
 function koboFrom(value: FormDataEntryValue | null): number | null {
   const text = String(value ?? "").replace(/[,\s₦]/g, "")

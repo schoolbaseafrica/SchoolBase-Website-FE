@@ -4,8 +4,12 @@ import { cookies } from "next/headers"
 export const platformCookie = "sb_platform_session"
 
 export class PlatformRequestError extends Error {
-  constructor(public readonly status: number) {
-    super(`Platform request failed with status ${status}`)
+  constructor(
+    public readonly status: number,
+    /** The platform's own explanation, for operators (e.g. "Already set"). */
+    public readonly detail: string | null = null
+  ) {
+    super(detail ?? `Platform request failed with status ${status}`)
   }
 }
 
@@ -143,10 +147,13 @@ export type SchoolStatusPage = {
   page_size: number
 }
 export type SchoolEntitlements = {
+  /** The school's tabs, in its menu order. */
+  groups: string[]
   last_fetched_at: string | null
   fetch_current: boolean
   offerings: Array<{
     key: string
+    group: string
     label: string
     description: string
     enabled: boolean
@@ -177,7 +184,7 @@ export type BillingInvoice = {
   due_on: string
   issued_at: string
   void_reason: string | null
-  status: "open" | "overdue" | "on_hold" | "paid" | "void"
+  status: "open" | "overdue" | "paid" | "void"
 }
 export type SchoolBilling = {
   today: string
@@ -206,7 +213,26 @@ export type SchoolBilling = {
   }>
   invoices: BillingInvoice[]
   on_hold: boolean
+  enforcement: Enforcement
 }
+/** How an overdue school's features are being paused. */
+export type Enforcement = {
+  mode: "automatic" | "manual"
+  mode_reason: string | null
+  days_overdue: number
+  automatic: string[]
+  paused: string[]
+  overrides: Array<{
+    id: string
+    offering: string
+    kind: "pause" | "keep_on"
+    reason: string
+    created_at: string
+    created_by: string | null
+  }>
+  next_step: { after_days: number; in_days: number; offerings: string[] } | null
+}
+export type ScheduleStep = { after_days: number; offerings: string[] }
 export type BillingInvoicePage = {
   items: BillingInvoice[]
   total: number
@@ -275,7 +301,14 @@ export async function platformRequest<T>(
     signal: AbortSignal.timeout(8000),
   })
   if (response.status === 401) throw new Error("Unauthorized")
-  if (!response.ok) throw new PlatformRequestError(response.status)
+  if (!response.ok) {
+    const body = (await response.json().catch(() => null)) as { message?: unknown } | null
+    const detail =
+      response.status < 500 && typeof body?.message === "string"
+        ? body.message.slice(0, 300)
+        : null
+    throw new PlatformRequestError(response.status, detail)
+  }
   return response.json() as Promise<T>
 }
 

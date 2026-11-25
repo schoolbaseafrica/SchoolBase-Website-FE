@@ -3,7 +3,6 @@ import type { BillingInvoice } from "@/lib/platform-admin"
 const STATUS: Record<BillingInvoice["status"], { label: string; tone: string }> = {
   open: { label: "Due", tone: "bg-blue-50 text-blue-800" },
   overdue: { label: "Overdue", tone: "bg-amber-50 text-amber-800" },
-  on_hold: { label: "On hold", tone: "bg-red-50 text-red-800" },
   paid: { label: "Paid", tone: "bg-emerald-50 text-emerald-800" },
   void: { label: "Void", tone: "bg-slate-100 text-slate-600" },
 }
