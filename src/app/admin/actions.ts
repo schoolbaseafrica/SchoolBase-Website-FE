@@ -529,3 +529,68 @@ export async function voidInvoice(_state: string | null, form: FormData) {
   if (!slug || !/^[0-9a-f-]{36}$/i.test(id) || !reason) return "Give a reason."
   return billingCall(`/invoices/${id}/void`, { reason }, slug)
 }
+
+export type SchoolTokenState = { error: string | null; token: string | null }
+
+/**
+ * Issue a token the school uses to report to the platform and read its
+ * features. The platform keeps only its hash, so it is returned once.
+ */
+export async function createSchoolToken(
+  _state: SchoolTokenState,
+  form: FormData
+): Promise<SchoolTokenState> {
+  const slug = String(form.get("slug") || "")
+  const reason = String(form.get("reason") || "").trim()
+  if (!SLUG.test(slug)) return { error: "Reload the page and try again.", token: null }
+  if (!reason || reason.length > 1000)
+    return { error: "Enter a reason of up to 1,000 characters.", token: null }
+  let token: string
+  try {
+    const created = await platformRequest<{ token: string }>(
+      `/schools/${slug}/credentials`,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ reason }),
+      }
+    )
+    token = created.token
+  } catch (error) {
+    return {
+      error:
+        error instanceof PlatformRequestError && error.detail
+          ? error.detail
+          : "The token could not be created.",
+      token: null,
+    }
+  }
+  revalidatePath(`/admin/schools/${slug}`)
+  return { error: null, token }
+}
+
+/** Stop a school token working, e.g. after replacing it. */
+export async function revokeSchoolToken(
+  _state: string | null,
+  form: FormData
+): Promise<string | null> {
+  const slug = String(form.get("slug") || "")
+  const id = String(form.get("id") || "")
+  const reason = String(form.get("reason") || "").trim()
+  if (!SLUG.test(slug) || !/^[0-9a-f-]{36}$/i.test(id))
+    return "Reload the page and try again."
+  if (!reason || reason.length > 1000) return "Enter a reason of up to 1,000 characters."
+  try {
+    await platformRequest(`/schools/${slug}/credentials/${id}/revoke`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ reason }),
+    })
+  } catch (error) {
+    return error instanceof PlatformRequestError && error.detail
+      ? error.detail
+      : "The token could not be revoked."
+  }
+  revalidatePath(`/admin/schools/${slug}`)
+  return null
+}

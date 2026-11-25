@@ -13,6 +13,7 @@ import { StatusRefresh } from "../../status-refresh"
 import { StorageAllocationForm } from "./storage-allocation-form"
 import { FeaturesSection } from "./features-section"
 import { BillingSection } from "./billing-section"
+import { ConnectionSection } from "./connection-section"
 
 export const metadata: Metadata = {
   title: "School status",
@@ -132,6 +133,12 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           every five minutes.
         </span>
       </p>
+      {operator.role === "platform_admin" && (
+        <ConnectionSection
+          slug={school.slug}
+          lastReport={status.staff_activity.last_received_at ?? null}
+        />
+      )}
       <BillingSection
         slug={school.slug}
         isAdmin={operator.role === "platform_admin"}
