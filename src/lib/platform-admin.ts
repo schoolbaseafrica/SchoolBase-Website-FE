@@ -21,6 +21,8 @@ export type School = {
   frontend_url: string
   api_url: string
   support_email: string | null
+  /** The school's Coolify app ID: how its container readings are found. */
+  coolify_resource_ref: string | null
   image_tag: string | null
   object_storage_allocation_bytes: string | null
   version: number

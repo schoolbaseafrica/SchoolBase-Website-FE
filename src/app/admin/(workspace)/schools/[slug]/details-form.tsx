@@ -10,6 +10,7 @@ type Details = {
   frontend_url: string
   api_url: string
   support_email: string | null
+  coolify_resource_ref: string | null
   lifecycle_state: string
 }
 
@@ -20,13 +21,13 @@ const STATES: Array<[string, string, string]> = [
   [
     "retired",
     "Retired",
-    "Probes stop and the school's token stops working. It can be undone.",
+    "Probes and readings stop, and the school's token stops working. It can be undone.",
   ],
 ]
 
 const field = "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
 
-/** The school's registered name, addresses, support email and state. */
+/** The school's registered name, addresses, support email, Coolify app and state. */
 export function DetailsForm({ school }: { school: Details }) {
   const [error, action, pending] = useActionState(updateSchoolDetails, null)
   const [open, setOpen] = useState(false)
@@ -63,6 +64,7 @@ export function DetailsForm({ school }: { school: Details }) {
           "frontend_url",
           "api_url",
           "support_email",
+          "coolify_resource_ref",
           "lifecycle_state",
         ] as const
       ).map((name) => (
@@ -127,6 +129,20 @@ export function DetailsForm({ school }: { school: Details }) {
           defaultValue={school.support_email ?? ""}
           className={field}
         />
+      </label>
+      <label className="text-sm">
+        <span className="mb-1 block font-medium">Coolify app ID</span>
+        <input
+          name="coolify_resource_ref"
+          defaultValue={school.coolify_resource_ref ?? ""}
+          placeholder="24 lowercase letters and numbers"
+          pattern="[a-z0-9]{20,40}"
+          className={field}
+        />
+        <span className="mt-1 block text-xs text-slate-500">
+          The code in the school app&apos;s Coolify address. It lets the collector find
+          the school&apos;s container.
+        </span>
       </label>
       <label className="text-sm">
         <span className="mb-1 block font-medium">Reason</span>

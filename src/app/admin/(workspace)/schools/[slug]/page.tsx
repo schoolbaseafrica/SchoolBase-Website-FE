@@ -2,7 +2,6 @@ import Link from "next/link"
 import type { Metadata } from "next"
 import {
   formatMetric,
-  formatBytes,
   formatTime,
   Metrics,
   School,
@@ -11,7 +10,6 @@ import {
   platformRequest,
 } from "@/lib/platform-admin"
 import { StatusRefresh } from "../../status-refresh"
-import { StorageAllocationForm } from "./storage-allocation-form"
 import { FeaturesSection } from "./features-section"
 import { BillingSection } from "./billing-section"
 import { ConnectionSection } from "./connection-section"
@@ -244,99 +242,56 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           </p>
         </div>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
-          {metrics.sources.map((source) => {
-            const usedMetric =
-              source.source === "object_store"
-                ? source.metrics.find((metric) => metric.metric === "bucket_bytes")
-                : undefined
-            const used =
-              usedMetric?.collection_status === "current" ? usedMetric.value : null
-            const allocation =
-              school.object_storage_allocation_bytes == null
-                ? null
-                : Number(school.object_storage_allocation_bytes)
-            const remaining =
-              used !== null && used !== undefined && allocation !== null
-                ? allocation - used
-                : null
-            return (
-              <div
-                key={source.id}
-                className="rounded-2xl border border-slate-200 bg-white p-5"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="font-bold capitalize">
-                    {source.source.replaceAll("_", " ")}
-                  </h3>
-                  <span className="text-xs text-slate-500">
-                    {source.revoked_at ? "Revoked" : "Configured"}
-                  </span>
-                </div>
-                <p className="mt-1 text-xs break-all text-slate-500">
-                  {source.resource_ref}
-                </p>
-                <div className="mt-5 space-y-3">
-                  {source.metrics.map((metric) => (
-                    <div key={metric.metric} className="border-t border-slate-100 pt-3">
-                      <div className="flex justify-between gap-3 text-sm">
-                        <div>
-                          <p className="capitalize">
-                            {metric.metric.replaceAll("_", " ")}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {metric.collection_status} · Last measured:{" "}
-                            {formatTime(metric.observed_at)}
-                          </p>
-                        </div>
-                        <strong>{formatMetric(metric)}</strong>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                {source.source === "object_store" && (
-                  <div className="mt-5 grid gap-3 border-t border-slate-200 pt-4 text-sm sm:grid-cols-3">
-                    <p>
-                      <span className="block text-slate-500">Used</span>
-                      <strong>{used == null ? "Unavailable" : formatBytes(used)}</strong>
-                    </p>
-                    <p>
-                      <span className="block text-slate-500">Allocated</span>
-                      <strong>
-                        {allocation === null ? "Not set" : formatBytes(allocation)}
-                      </strong>
-                    </p>
-                    <p>
-                      <span className="block text-slate-500">Remaining allocation</span>
-                      <strong>
-                        {remaining === null
-                          ? "Unavailable"
-                          : remaining < 0
-                            ? `${formatBytes(-remaining)} over`
-                            : formatBytes(remaining)}
-                      </strong>
-                    </p>
-                    <p className="text-xs text-slate-500 sm:col-span-3">
-                      Allocation is a monitoring target, not an enforced upload limit.
-                    </p>
+          {metrics.sources
+            .filter((source) => !source.revoked_at)
+            .map((source) => {
+              return (
+                <div
+                  key={source.id}
+                  className="rounded-2xl border border-slate-200 bg-white p-5"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="font-bold capitalize">
+                      {source.source.replaceAll("_", " ")}
+                    </h3>
+                    <span className="text-xs text-slate-500">
+                      {source.revoked_at ? "Revoked" : "Configured"}
+                    </span>
                   </div>
-                )}
-              </div>
-            )
-          })}
-          {!metrics.sources.length && (
+                  <p className="mt-1 text-xs break-all text-slate-500">
+                    {source.resource_ref}
+                  </p>
+                  <div className="mt-5 space-y-3">
+                    {source.metrics.map((metric) => (
+                      <div key={metric.metric} className="border-t border-slate-100 pt-3">
+                        <div className="flex justify-between gap-3 text-sm">
+                          <div>
+                            <p className="capitalize">
+                              {metric.metric.replaceAll("_", " ")}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {metric.collection_status} · Last measured:{" "}
+                              {formatTime(metric.observed_at)}
+                            </p>
+                          </div>
+                          <strong>{formatMetric(metric)}</strong>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
+          {!metrics.sources.some((source) => !source.revoked_at) && (
             <p className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-600">
-              No infrastructure collector configured. Other capacity signals are
-              unavailable.
+              No storage or container readings yet. The collector measures every school
+              within the hour
+              {school.coolify_resource_ref
+                ? "."
+                : "; container readings also need this school's Coolify app ID (Edit details)."}
             </p>
           )}
         </div>
-        {operator.role === "platform_admin" && (
-          <StorageAllocationForm
-            slug={school.slug}
-            version={school.version}
-            allocationBytes={school.object_storage_allocation_bytes}
-          />
-        )}
       </section>
     </div>
   )

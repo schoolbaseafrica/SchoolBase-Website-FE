@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { formatMetric, formatTime, Metrics, platformRequest } from "@/lib/platform-admin"
 import { RevokeSourceForm } from "./revoke-source-form"
+import { FleetSection } from "./fleet-section"
 
 export const metadata: Metadata = {
   title: "Infrastructure",
@@ -33,6 +34,7 @@ export default async function Page() {
   return (
     <div>
       <h1 className="text-3xl font-bold">Infrastructure</h1>
+      {operator.role === "platform_admin" && <FleetSection />}
       <h2 className="mt-6 text-xl font-bold">Shared storage headroom</h2>
       <p className="mt-1 text-sm text-slate-600">
         These readings belong to shared infrastructure and are not assigned to a school.

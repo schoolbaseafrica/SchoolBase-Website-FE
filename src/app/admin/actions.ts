@@ -262,51 +262,6 @@ export async function createSchool(
   redirect(`/admin/schools/${school.slug}`)
 }
 
-export async function updateStorageAllocation(
-  _state: string | null,
-  form: FormData
-): Promise<string | null> {
-  const slug = String(form.get("slug") || "")
-  const expected_version = Number(form.get("expected_version"))
-  const raw = String(form.get("allocation_gib") || "").trim()
-  const reason = String(form.get("reason") || "").trim()
-  if (
-    !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) ||
-    !Number.isSafeInteger(expected_version) ||
-    expected_version < 1
-  )
-    return "Reload the school page and try again."
-  if (!reason || reason.length > 1000) return "Enter a reason for the allocation change."
-  let object_storage_allocation_bytes: number | null = null
-  if (raw) {
-    if (!/^\d+(?:\.\d{1,10})?$/.test(raw))
-      return "Enter an amount in GiB with up to ten decimal places."
-    object_storage_allocation_bytes = Math.round(Number(raw) * 1024 ** 3)
-    if (
-      !Number.isSafeInteger(object_storage_allocation_bytes) ||
-      object_storage_allocation_bytes <= 0
-    )
-      return "Enter a positive storage allocation."
-  }
-  try {
-    await platformRequest(`/schools/${slug}`, {
-      method: "PATCH",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ object_storage_allocation_bytes, expected_version, reason }),
-    })
-  } catch (error) {
-    if (error instanceof PlatformRequestError && error.status === 409)
-      return "School settings changed. Reload before editing the allocation."
-    if (error instanceof PlatformRequestError && error.status === 403)
-      return "Only a Platform administrator can change storage allocation."
-    if (error instanceof PlatformRequestError && error.status === 400)
-      return "Check the allocation and reason, then try again."
-    return "The allocation could not be saved. Try again."
-  }
-  revalidatePath(`/admin/schools/${slug}`)
-  redirect(`/admin/schools/${slug}`)
-}
-
 /** Switch one optional feature on or off for one school, with a reason. */
 export async function setSchoolEntitlement(
   _state: string | null,
@@ -655,6 +610,12 @@ export async function updateSchoolDetails(
     return "Enter a valid support email, or leave it blank."
   if (email !== was("support_email")) changes.support_email = email || null
 
+  const coolify = read("coolify_resource_ref")
+  if (coolify && !/^[a-z0-9]{20,40}$/.test(coolify))
+    return "The Coolify app ID is the 24-character code in the app's Coolify address, letters and numbers only."
+  if (coolify !== was("coolify_resource_ref"))
+    changes.coolify_resource_ref = coolify || null
+
   const lifecycle = read("lifecycle_state")
   if (!LIFECYCLE.includes(lifecycle)) return "Choose a valid state."
   if (lifecycle !== was("lifecycle_state")) changes.lifecycle_state = lifecycle
@@ -670,11 +631,70 @@ export async function updateSchoolDetails(
     if (error instanceof PlatformRequestError && error.status === 409)
       return error.detail === "School changed; reload before editing"
         ? "Someone else changed this school. Reload the page and try again."
-        : "Another school already uses that address."
+        : "Another school already uses that address or Coolify app ID."
     return error instanceof PlatformRequestError && error.detail
       ? error.detail
       : "The change could not be saved."
   }
   revalidatePath("/admin", "layout")
+  return null
+}
+
+export type FleetTokenState = { error: string | null; token: string | null }
+
+/**
+ * Issue the collector token that reports storage and container readings for
+ * every school. The platform keeps only its hash, so it is returned once.
+ */
+export async function createFleetToken(
+  _state: FleetTokenState,
+  form: FormData
+): Promise<FleetTokenState> {
+  const reason = String(form.get("reason") || "").trim()
+  if (!reason || reason.length > 1000)
+    return { error: "Enter a reason of up to 1,000 characters.", token: null }
+  let token: string
+  try {
+    token = (
+      await platformRequest<{ token: string }>("/fleet-collectors", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ reason }),
+      })
+    ).token
+  } catch (error) {
+    return {
+      error:
+        error instanceof PlatformRequestError && error.detail
+          ? error.detail
+          : "The token could not be created.",
+      token: null,
+    }
+  }
+  revalidatePath("/admin/infrastructure")
+  return { error: null, token }
+}
+
+/** Stop a collector token working. Readings stop until the collector has a new one. */
+export async function revokeFleetToken(
+  _state: string | null,
+  form: FormData
+): Promise<string | null> {
+  const id = String(form.get("id") || "")
+  const reason = String(form.get("reason") || "").trim()
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return "Reload the page and try again."
+  if (!reason || reason.length > 1000) return "Enter a reason of up to 1,000 characters."
+  try {
+    await platformRequest(`/fleet-collectors/${id}/revoke`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ reason }),
+    })
+  } catch (error) {
+    return error instanceof PlatformRequestError && error.detail
+      ? error.detail
+      : "The token could not be revoked."
+  }
+  revalidatePath("/admin/infrastructure")
   return null
 }
