@@ -698,3 +698,27 @@ export async function revokeFleetToken(
   revalidatePath("/admin/infrastructure")
   return null
 }
+
+/** Record that an overpayment was refunded to the school in Paystack. */
+export async function markOverpaymentRefunded(
+  _state: string | null,
+  form: FormData
+): Promise<string | null> {
+  const id = String(form.get("id") || "")
+  const reason = String(form.get("reason") || "").trim()
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return "Reload the page and try again."
+  if (!reason || reason.length > 1000) return "Enter a note of up to 1,000 characters."
+  try {
+    await platformRequest(`/billing/overpayments/${id}/refunded`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ reason }),
+    })
+  } catch (error) {
+    return error instanceof PlatformRequestError && error.detail
+      ? error.detail
+      : "The refund could not be recorded."
+  }
+  revalidatePath("/admin/billing")
+  return null
+}

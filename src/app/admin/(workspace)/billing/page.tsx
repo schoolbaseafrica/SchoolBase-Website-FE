@@ -7,6 +7,7 @@ import {
   type ScheduleStep,
 } from "@/lib/platform-admin"
 import { ScheduleEditor } from "./schedule-editor"
+import { Overpayments } from "./overpayments"
 import {
   InvoiceStatus,
   INVOICE_STATUSES,
@@ -69,6 +70,7 @@ export default async function Page({
         What schools owe SchoolBase. Open a school to set its price, periods and adjust
         invoices.
       </p>
+      <Overpayments isAdmin={me?.role === "platform_admin"} />
       <div className="mt-6 flex flex-wrap gap-2">
         <Link href="/admin/billing" className={tab(!status)}>
           All
